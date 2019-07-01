@@ -1,6 +1,8 @@
 package sqlite
 
 import (
+	"fmt"
+
 	"github.com/ShotaKitazawa/tabemap-api/adapter/gateway"
 	"github.com/ShotaKitazawa/tabemap-api/utils"
 	"github.com/jinzhu/gorm"
@@ -18,9 +20,10 @@ func Connect(target string) *gorm.DB {
 		panic(err)
 	}
 
-	if !db.HasTable(&gateway.Input{}) {
-		if err := db.Table("inputs").CreateTable(&gateway.Input{}).Error; err != nil {
-			panic(err)
+	if !db.HasTable(&gateway.Article{}) {
+		if err := db.Table("article").CreateTable(&gateway.Article{}).Error; err != nil {
+			fmt.Println(err)
+			// panic(err)
 		}
 	}
 

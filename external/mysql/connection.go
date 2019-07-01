@@ -19,8 +19,8 @@ func Connect(target string) *gorm.DB {
 		panic(err)
 	}
 
-	if !db.HasTable(&gateway.Input{}) {
-		if err := db.Table("input").CreateTable(&gateway.Input{}).Error; err != nil {
+	if !db.HasTable(&gateway.Article{}) {
+		if err := db.Table("article").CreateTable(&gateway.Article{}).Error; err != nil {
 			panic(err)
 		}
 	}
