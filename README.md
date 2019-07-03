@@ -7,8 +7,8 @@
         * {pos_id: address}
 
 ```
-map{id, shop_id, pos_id, type}
-shop{id, name, url, description}
+map{id, shop_id, pos_id}
+shop{id, name, url, description, type}
 pos_id{id, lat, lng}
 ```
 

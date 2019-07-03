@@ -7,11 +7,11 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/ShotaKitazawa/tabemap-api/external"
-	_ "github.com/ShotaKitazawa/tabemap-api/external"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/ShotaKitazawa/tabemap-api/external"
 )
 
 var r *gin.Engine
@@ -34,18 +34,18 @@ func TestArticleController(t *testing.T) {
 		rec = httptest.NewRecorder()
 		r.ServeHTTP(rec, req)
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, "hogefuga", rec.Body.String())
+		assert.Equal(t, "", rec.Body.String())
 
 		req = httptest.NewRequest("POST", "/api/article", nil)
 		rec = httptest.NewRecorder()
 		r.ServeHTTP(rec, req)
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, "hogefuga", rec.Body.String())
+		assert.Equal(t, "", rec.Body.String())
 
 		req = httptest.NewRequest("GET", "/api/article", nil)
 		rec = httptest.NewRecorder()
 		r.ServeHTTP(rec, req)
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, "hogefuga", rec.Body.String())
+		assert.Equal(t, "", rec.Body.String())
 	})
 }

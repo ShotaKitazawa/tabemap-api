@@ -1,24 +1,36 @@
 package gateway
 
 import (
-	"github.com/ShotaKitazawa/tabemap-api/domain"
-
 	"github.com/jinzhu/gorm"
+
+	"github.com/ShotaKitazawa/tabemap-api/domain"
 )
 
 type (
+	// ArticleRepository is repository
 	ArticleRepository struct {
 		DBConn *gorm.DB
 	}
 
-	Article struct {
+	// Map struct = map table
+	Map struct {
 		gorm.Model
-		Title       string
+		ShopID uint
+		PosID  uint
+	}
+	// Shop struct = shop table
+	Shop struct {
+		gorm.Model
+		Name        string
 		URL         string
 		Description string
-		Lat         float64
-		Lng         float64
 		Type        string
+	}
+	// Position struct = position table
+	Position struct {
+		gorm.Model
+		Lat float64
+		Lng float64
 	}
 )
 

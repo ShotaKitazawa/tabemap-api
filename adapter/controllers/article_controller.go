@@ -3,12 +3,12 @@ package controllers
 import (
 	"time"
 
+	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
+
 	"github.com/ShotaKitazawa/tabemap-api/adapter/gateway"
 	"github.com/ShotaKitazawa/tabemap-api/adapter/interfaces"
 	"github.com/ShotaKitazawa/tabemap-api/usecase"
-	"github.com/pkg/errors"
-
-	"github.com/jinzhu/gorm"
 )
 
 type ArticleController struct {

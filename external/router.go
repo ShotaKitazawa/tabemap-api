@@ -1,12 +1,12 @@
 package external
 
 import (
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+
 	"github.com/ShotaKitazawa/tabemap-api/adapter/controllers"
 	// "github.com/ShotaKitazawa/tabemap-api/external/mysql"
 	"github.com/ShotaKitazawa/tabemap-api/external/sqlite"
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 )
 
 // Router called by main.go
