@@ -34,7 +34,7 @@ func (controller *ArticleController) Read(c interfaces.Context) {
 		Request struct {
 		}
 		Response struct {
-			ID          uint      `json:"id"`
+			ID          uint64    `json:"id"`
 			Title       string    `json:"title"`
 			URL         string    `json:"url"`
 			Description string    `json:"description"`

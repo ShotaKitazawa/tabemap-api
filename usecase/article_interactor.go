@@ -10,11 +10,11 @@ type ArticleInteractor struct {
 	Logger            interfaces.Logger
 }
 
-func (i *ArticleInteractor) Add() (*domain.Article, error) {
+func (i *ArticleInteractor) Add(d *domain.Article) (uint64, error) {
 	i.Logger.Log("add data")
-	return i.ArticleRepository.Store()
+	return i.ArticleRepository.Store(d)
 }
 func (i *ArticleInteractor) Get() (*domain.Article, error) {
 	i.Logger.Log("add data")
-	return i.ArticleRepository.Store()
+	return i.ArticleRepository.FindByName()
 }

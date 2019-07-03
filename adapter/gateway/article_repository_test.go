@@ -1,14 +1,24 @@
 package gateway
 
 import (
+	"database/sql/driver"
 	"os"
-	"regexp"
 	"testing"
+	"time"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
+	"github.com/ShotaKitazawa/tabemap-api/domain"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/stretchr/testify/assert"
 )
+
+type AnyTime struct{} // I don't actually know if I even need this
+
+func (a AnyTime) Match(v driver.Value) bool {
+	_, ok := v.(time.Time)
+	return ok
+}
 
 func getDBMock() (*gorm.DB, sqlmock.Sqlmock, error) {
 	db, mock, err := sqlmock.New()
@@ -16,7 +26,7 @@ func getDBMock() (*gorm.DB, sqlmock.Sqlmock, error) {
 		return nil, nil, err
 	}
 
-	gdb, err := gorm.Open("mysql", db)
+	gdb, err := gorm.Open("sqlite3", db)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -39,43 +49,40 @@ func TestArticleController(t *testing.T) {
 			db.LogMode(true)
 
 			r := ArticleRepository{DBConn: db}
-			var map_id, shop_id, pos_id uint
-			var name, url, description, shop_type string
-			var lat, lng float64
+			d := &domain.Article{
+				ID:          1,
+				Title:       "hoge",
+				URL:         "example.com",
+				Description: "fot test",
+				Type:        "japanese",
+				Lat:         1.1,
+				Lng:         1.1,
+			}
+			var shop_id, pos_id int64
+			shop_id = 1
+			pos_id = 1
 
 			mock.ExpectBegin()
-			// insert into map
-			map_id = 1
-			shop_id = 1
-			pos_id = 1
-			mock.ExpectQuery(regexp.QuoteMeta(
-				`INSERT INTO "map" ("id","shop_id","pos_id") VALUES ($1,$2, $3)`)).
-				WithArgs(map_id, shop_id, pos_id).
-				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(map_id))
-			// insert into shop
-			shop_id = 1
-			name = "hoge"
-			url = "example.com"
-			description = "for test"
-			shop_type = "japanese"
-			mock.ExpectQuery(regexp.QuoteMeta(
-				`INSERT INTO "shop" ("id","name", "url", "description", "type") VALUES ($1,$2,$3,$4,$5)`)).
-				WithArgs(shop_id, name, url, description, shop_type).
-				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(shop_id))
-			// insert into position
-			pos_id = 1
-			lat = 1
-			lng = 1
-			mock.ExpectQuery(regexp.QuoteMeta(
-				`INSERT INTO "pos" ("id","lat","lng") VALUES ($1,$2, $3)`)).
-				WithArgs(pos_id, lat, lng).
-				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(pos_id))
+			mock.ExpectExec("^INSERT INTO \"shops\" (.+)$").
+				WithArgs(AnyTime{}, AnyTime{}, nil, d.Title, d.URL, d.Description, d.Type).
+				WillReturnResult(sqlmock.NewResult(shop_id, 1))
+			mock.ExpectCommit()
+			mock.ExpectBegin()
+			mock.ExpectExec("^INSERT INTO \"positions\" (.+)$").
+				WithArgs(AnyTime{}, AnyTime{}, nil, d.Lat, d.Lng).
+				WillReturnResult(sqlmock.NewResult(pos_id, 1))
+			mock.ExpectCommit()
+			mock.ExpectBegin()
+			mock.ExpectExec("^INSERT INTO \"maps\" (.+)$").
+				WithArgs(AnyTime{}, AnyTime{}, nil, shop_id, pos_id).
+				WillReturnResult(sqlmock.NewResult(1, 1))
 			mock.ExpectCommit()
 
-			_, err = r.Store()
-			if err != nil {
-				t.Fatal(err)
-			}
+			_, err = r.Store(d)
+			assert.Nil(t, err)
+
+			err = mock.ExpectationsWereMet()
+			assert.Nil(t, err)
 		})
 	})
 }

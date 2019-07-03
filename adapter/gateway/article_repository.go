@@ -1,6 +1,8 @@
 package gateway
 
 import (
+	"fmt"
+
 	"github.com/jinzhu/gorm"
 
 	"github.com/ShotaKitazawa/tabemap-api/domain"
@@ -15,8 +17,8 @@ type (
 	// Map struct = map table
 	Map struct {
 		gorm.Model
-		ShopID uint
-		PosID  uint
+		ShopID uint64
+		PosID  uint64
 	}
 	// Shop struct = shop table
 	Shop struct {
@@ -29,13 +31,39 @@ type (
 	// Position struct = position table
 	Position struct {
 		gorm.Model
-		Lat float64
-		Lng float64
+		// TODO
+		Lat float64 `gorm:"column(lat);FLOAT(5,2);"`
+		Lng float64 `gorm:"column(lng);FLOAT(5,2);"`
 	}
 )
 
-func (r *ArticleRepository) Store() (*domain.Article, error) {
-	return nil, nil
+func (r *ArticleRepository) Store(d *domain.Article) (id uint64, err error) {
+	shop := &Shop{
+		Name:        d.Title,
+		URL:         d.URL,
+		Description: d.Description,
+		Type:        d.Type,
+	}
+	if err = r.DBConn.Create(shop).Error; err != nil {
+		fmt.Println(err)
+		return
+	}
+	pos := Position{
+		Lat: 1.1,
+		Lng: 1.1,
+	}
+	if err = r.DBConn.Create(pos).Error; err != nil {
+		return
+	}
+	m := &Map{
+		ShopID: uint64(shop.ID),
+		PosID:  uint64(pos.ID),
+	}
+	if err = r.DBConn.Create(m).Error; err != nil {
+		return
+	}
+
+	return uint64(m.ID), nil
 }
 func (r *ArticleRepository) FindByName() (*domain.Article, error) {
 	return nil, nil

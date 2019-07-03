@@ -10,5 +10,5 @@ func main() {
 	defer sqlite.CloseConn()
 	// defer mysql.CloseConn()
 
-	external.Router.Run("0.0.0.0:9080")
+	external.Router.Run("0.0.0.0:8080")
 }
