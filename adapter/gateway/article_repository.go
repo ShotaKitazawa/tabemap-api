@@ -1,8 +1,6 @@
 package gateway
 
 import (
-	"fmt"
-
 	"github.com/jinzhu/gorm"
 
 	"github.com/ShotaKitazawa/tabemap-api/domain"
@@ -31,9 +29,8 @@ type (
 	// Position struct = position table
 	Position struct {
 		gorm.Model
-		// TODO
-		Lat float64 `gorm:"column(lat);FLOAT(5,2);"`
-		Lng float64 `gorm:"column(lng);FLOAT(5,2);"`
+		Lat float64
+		Lng float64
 	}
 )
 
@@ -45,12 +42,11 @@ func (r *ArticleRepository) Store(d *domain.Article) (id uint64, err error) {
 		Type:        d.Type,
 	}
 	if err = r.DBConn.Create(shop).Error; err != nil {
-		fmt.Println(err)
 		return
 	}
 	pos := Position{
-		Lat: 1.1,
-		Lng: 1.1,
+		Lat: d.Lat,
+		Lng: d.Lng,
 	}
 	if err = r.DBConn.Create(pos).Error; err != nil {
 		return
