@@ -8,6 +8,7 @@ import (
 
 	"github.com/ShotaKitazawa/tabemap-api/adapter/gateway"
 	"github.com/ShotaKitazawa/tabemap-api/adapter/interfaces"
+	"github.com/ShotaKitazawa/tabemap-api/domain"
 	"github.com/ShotaKitazawa/tabemap-api/usecase"
 )
 
@@ -32,9 +33,16 @@ func (controller *ArticleController) Create(c interfaces.Context) {
 func (controller *ArticleController) Read(c interfaces.Context) {
 	type (
 		Request struct {
+			ID    int64   `json:"id"`
+			Title string  `json:"title"`
+			Lat   float64 `json:"latitude"`
+			Lng   float64 `json:"longitude"`
+			Type  string  `json:"type"`
+			Start int     `json:"start"`
+			End   int     `json:"end"`
 		}
 		Response struct {
-			ID          uint64    `json:"id"`
+			ID          int64     `json:"id"`
 			Title       string    `json:"title"`
 			URL         string    `json:"url"`
 			Description string    `json:"description"`
@@ -47,21 +55,32 @@ func (controller *ArticleController) Read(c interfaces.Context) {
 	req := Request{}
 	c.Bind(&req)
 
-	data, err := controller.Interactor.Get()
+	article := &domain.Article{
+		ID:    req.ID,
+		Title: req.Title,
+		Lat:   req.Lat,
+		Lng:   req.Lng,
+		Type:  req.Type,
+	}
+
+	data, err := controller.Interactor.Get(article, req.Start, req.End)
 	if err != nil {
 		controller.Interactor.Logger.Log(errors.Wrap(err, "input_controller: cannot get data"))
 		c.JSON(500, NewError(500, err.Error()))
 		return
 	}
-	res := Response{
-		ID:          data.ID,
-		Title:       data.Title,
-		URL:         data.URL,
-		Description: data.Description,
-		Lat:         data.Lat,
-		Lng:         data.Lng,
-		Type:        data.Type,
-		CreatedAt:   data.CreatedAt,
+	res := []Response{}
+	for _, val := range data {
+		res = append(res, Response{
+			ID:          val.ID,
+			Title:       val.Title,
+			URL:         val.URL,
+			Description: val.Description,
+			Lat:         val.Lat,
+			Lng:         val.Lng,
+			Type:        val.Type,
+			CreatedAt:   val.CreatedAt,
+		})
 	}
 	c.JSON(201, res)
 }

@@ -19,9 +19,7 @@ func Connect(target string) *gorm.DB {
 		panic(err)
 	}
 
-	db.AutoMigrate(&gateway.Map{})
 	db.AutoMigrate(&gateway.Shop{})
-	db.AutoMigrate(&gateway.Position{})
 	/*
 		if !db.HasTable(&gateway.Map{}) {
 			if err := db.Table("map").CreateTable(&gateway.Map{}).Error; err != nil {

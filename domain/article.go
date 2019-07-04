@@ -4,7 +4,7 @@ import "time"
 
 // Article is Shop data
 type Article struct {
-	ID          uint64    `json:"id"`
+	ID          int64     `json:"id"`
 	Title       string    `json:"title"`
 	URL         string    `json:"url"`
 	Description string    `json:"description"`

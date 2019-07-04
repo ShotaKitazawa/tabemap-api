@@ -55,28 +55,15 @@ func TestArticleController(t *testing.T) {
 				Title:       "hoge",
 				URL:         "example.com",
 				Description: "fot test",
-				Type:        "japanese",
+				Type:        "Japanese",
 				Lat:         1.1,
 				Lng:         1.1,
 			}
-			var shop_id, pos_id int64
-			shop_id = 1
-			pos_id = 1
 
 			mock.ExpectBegin()
-			mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `shops` (`created_at`,`updated_at`,`deleted_at`,`name`,`url`,`description`,`type`) VALUES (?,?,?,?,?,?,?)")).
-				WithArgs(AnyTime{}, AnyTime{}, nil, d.Title, d.URL, d.Description, d.Type).
-				WillReturnResult(sqlmock.NewResult(shop_id, 1))
-			mock.ExpectCommit()
-			mock.ExpectBegin()
-			mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `positions` (`created_at`,`updated_at`,`deleted_at`,`lat`,`lng`) VALUES (?,?,?,?,?)")).
-				WithArgs(AnyTime{}, AnyTime{}, nil, d.Lat, d.Lng).
-				WillReturnResult(sqlmock.NewResult(pos_id, 1))
-			mock.ExpectCommit()
-			mock.ExpectBegin()
-			mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `maps` (`created_at`,`updated_at`,`deleted_at`,`shop_id`,`map_id`) VALUES (?,?,?,?,?)")).
-				WithArgs(AnyTime{}, AnyTime{}, nil, shop_id, pos_id).
-				WillReturnResult(sqlmock.NewResult(1, 1))
+			mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `shops` (`created_at`,`updated_at`,`deleted_at`,`name`,`url`,`description`,`type`,`lat`,`lng`) VALUES (?,?,?,?,?,?,?,?,?)")).
+				WithArgs(AnyTime{}, AnyTime{}, nil, d.Title, d.URL, d.Description, d.Type, d.Lat, d.Lng).
+				WillReturnResult(sqlmock.NewResult(d.ID, 1))
 			mock.ExpectCommit()
 
 			_, err = r.Store(d)
