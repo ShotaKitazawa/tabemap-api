@@ -44,7 +44,7 @@ func (r *ArticleRepository) Store(d *domain.Article) (id uint64, err error) {
 	if err = r.DBConn.Create(shop).Error; err != nil {
 		return
 	}
-	pos := Position{
+	pos := &Position{
 		Lat: d.Lat,
 		Lng: d.Lng,
 	}
