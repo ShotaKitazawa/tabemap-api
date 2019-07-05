@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -36,13 +37,16 @@ func (r *ArticleRepository) Store(d *domain.Article) (id int64, err error) {
 		Lat:         d.Lat,
 		Lng:         d.Lng,
 	}
+	if errors.New("Name is empty"); s.Name == "" {
+		return
+	}
 	if err = r.DBConn.Create(s).Error; err != nil {
 		return
 	}
 
 	return int64(s.ID), nil
 }
-func (r *ArticleRepository) Find(article *domain.Article, start, end int) ([]*domain.Article, error) {
+func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) ([]*domain.Article, error) {
 	var queryArray []string
 	if article.Title != "" {
 		queryArray = append(queryArray, fmt.Sprintf("title=\"%s\"", article.Title))
@@ -59,7 +63,10 @@ func (r *ArticleRepository) Find(article *domain.Article, start, end int) ([]*do
 	query := strings.Join(queryArray, " and ")
 
 	result := make([]*domain.Article, 0)
-	r.DBConn.Find(result, query, 2)
+	if limit == 0 {
+		limit = -1
+	}
+	r.DBConn.Limit(limit).Offset(offset).Find(result, query)
 
 	return result, nil
 }

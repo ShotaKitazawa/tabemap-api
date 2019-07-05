@@ -14,7 +14,7 @@ func (i *ArticleInteractor) Add(d *domain.Article) (int64, error) {
 	i.Logger.Log("add data")
 	return i.ArticleRepository.Store(d)
 }
-func (i *ArticleInteractor) Get(article *domain.Article, start, end int) ([]*domain.Article, error) {
+func (i *ArticleInteractor) Get(article *domain.Article, limit, offset int) ([]*domain.Article, error) {
 	i.Logger.Log("add data")
-	return i.ArticleRepository.Find(article, start, end)
+	return i.ArticleRepository.Find(article, limit, offset)
 }

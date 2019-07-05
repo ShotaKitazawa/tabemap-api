@@ -33,13 +33,13 @@ func (controller *ArticleController) Create(c interfaces.Context) {
 func (controller *ArticleController) Read(c interfaces.Context) {
 	type (
 		Request struct {
-			ID    int64   `json:"id"`
-			Title string  `json:"title"`
-			Lat   float64 `json:"latitude"`
-			Lng   float64 `json:"longitude"`
-			Type  string  `json:"type"`
-			Start int     `json:"start"`
-			End   int     `json:"end"`
+			ID     int64   `json:"id"`
+			Title  string  `json:"title"`
+			Lat    float64 `json:"latitude"`
+			Lng    float64 `json:"longitude"`
+			Type   string  `json:"type"`
+			Limit  int     `json:"limit"`
+			Offset int     `json:"offset"`
 		}
 		Response struct {
 			ID          int64     `json:"id"`
@@ -63,7 +63,7 @@ func (controller *ArticleController) Read(c interfaces.Context) {
 		Type:  req.Type,
 	}
 
-	data, err := controller.Interactor.Get(article, req.Start, req.End)
+	data, err := controller.Interactor.Get(article, req.Limit, req.Offset)
 	if err != nil {
 		controller.Interactor.Logger.Log(errors.Wrap(err, "input_controller: cannot get data"))
 		c.JSON(500, NewError(500, err.Error()))
