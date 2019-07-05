@@ -2,7 +2,6 @@ package gateway
 
 import (
 	"database/sql/driver"
-	"errors"
 	"os"
 	"regexp"
 	"testing"
@@ -14,6 +13,11 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	os.Exit(code)
+}
 
 func TestArticleController(t *testing.T) {
 	t.Run("Store()", func(t *testing.T) {
@@ -44,6 +48,7 @@ func TestArticleController(t *testing.T) {
 
 			_, err = r.Store(d)
 			assert.Nil(t, err)
+			assert.Nil(t, mock.ExpectationsWereMet())
 		})
 		t.Run("保存する(異常系)", func(t *testing.T) {
 			db, mock, err := getDBMock()
@@ -64,18 +69,35 @@ func TestArticleController(t *testing.T) {
 				Lng:         1.1,
 			}
 
-			mock.ExpectBegin()
-			mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `shops` (`created_at`,`updated_at`,`deleted_at`,`name`,`url`,`description`,`type`,`lat`,`lng`) VALUES (?,?,?,?,?,?,?,?,?)")).
-				WithArgs(AnyTime{}, AnyTime{}, nil, d.Title, d.URL, d.Description, d.Type, d.Lat, d.Lng).
-				WillReturnError(errors.New("Name is empty"))
-			mock.ExpectCommit()
-
 			_, err = r.Store(d)
-			assert.Nil(t, err)
+			assert.NotNil(t, err)
+			assert.Nil(t, mock.ExpectationsWereMet())
 		})
 	})
 	t.Run("Find()", func(t *testing.T) {
 		t.Run("すべて取得する", func(t *testing.T) {
+			db, mock, err := getDBMock()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer db.Close()
+			db.LogMode(true)
+
+			r := ArticleRepository{DBConn: db}
+			d := &domain.Article{
+				ID:    0,
+				Title: "",
+				Lat:   0,
+				Lng:   0,
+				Type:  "",
+			}
+
+			mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `shops`")).
+				WillReturnRows(sqlmock.NewRows([]string{"id", "title", "url", "description", "type", "lat", "lng"}).AddRow(d.ID, d.Title, d.URL, d.Description, d.Type, d.Lat, d.Lng))
+
+			_, err = r.Find(d, 0, 0)
+			assert.Nil(t, err)
+			assert.Nil(t, mock.ExpectationsWereMet())
 		})
 	})
 }
@@ -98,9 +120,4 @@ func getDBMock() (*gorm.DB, sqlmock.Sqlmock, error) {
 		return nil, nil, err
 	}
 	return gdb, mock, nil
-}
-
-func TestMain(m *testing.M) {
-	code := m.Run()
-	os.Exit(code)
 }

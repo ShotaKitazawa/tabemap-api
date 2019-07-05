@@ -10,13 +10,19 @@ import (
 	"github.com/ShotaKitazawa/tabemap-api/domain"
 )
 
+var ErrNameIsEmpty error
+
+func init() {
+	ErrNameIsEmpty = errors.New("Name is empty")
+}
+
 type (
 	// ArticleRepository is repository
 	ArticleRepository struct {
 		DBConn *gorm.DB
 	}
 
-	// Shop struct = shop table
+	// Shop struct is DB shop table
 	Shop struct {
 		gorm.Model
 		Name        string
@@ -37,7 +43,7 @@ func (r *ArticleRepository) Store(d *domain.Article) (id int64, err error) {
 		Lat:         d.Lat,
 		Lng:         d.Lng,
 	}
-	if errors.New("Name is empty"); s.Name == "" {
+	if err = ErrNameIsEmpty; s.Name == "" {
 		return
 	}
 	if err = r.DBConn.Create(s).Error; err != nil {
@@ -62,13 +68,25 @@ func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) ([]
 	}
 	query := strings.Join(queryArray, " and ")
 
-	result := make([]*domain.Article, 0)
+	shops := []Shop{}
 	if limit == 0 {
 		limit = -1
 	}
-	r.DBConn.Limit(limit).Offset(offset).Find(result, query)
+	r.DBConn.Limit(limit).Offset(offset).Find(&shops, query)
+	var d []*domain.Article
+	for _, val := range shops {
+		d = append(d, &domain.Article{
+			ID:          int64(val.ID),
+			Title:       val.Name,
+			URL:         val.URL,
+			Description: val.Description,
+			Type:        val.Type,
+			Lat:         val.Lat,
+			Lng:         val.Lng,
+		})
+	}
 
-	return result, nil
+	return d, nil
 }
 func (r *ArticleRepository) Update() (*domain.Article, error) {
 	return nil, nil
