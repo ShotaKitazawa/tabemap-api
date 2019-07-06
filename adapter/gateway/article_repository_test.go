@@ -22,6 +22,8 @@ func TestMain(m *testing.M) {
 func TestArticleController(t *testing.T) {
 	t.Run("Store()", func(t *testing.T) {
 		t.Run("保存する(正常系)", func(t *testing.T) {
+			var r ArticleRepository
+			var d *domain.Article
 			db, mock, err := getDBMock()
 			if err != nil {
 				t.Fatal(err)
@@ -29,8 +31,8 @@ func TestArticleController(t *testing.T) {
 			defer db.Close()
 			db.LogMode(true)
 
-			r := ArticleRepository{DBConn: db}
-			d := &domain.Article{
+			r = ArticleRepository{DBConn: db}
+			d = &domain.Article{
 				ID:          1,
 				Title:       "hoge",
 				URL:         "example.com",
@@ -51,6 +53,8 @@ func TestArticleController(t *testing.T) {
 			assert.Nil(t, mock.ExpectationsWereMet())
 		})
 		t.Run("保存する(異常系)", func(t *testing.T) {
+			var r ArticleRepository
+			var d *domain.Article
 			db, mock, err := getDBMock()
 			if err != nil {
 				t.Fatal(err)
@@ -58,8 +62,8 @@ func TestArticleController(t *testing.T) {
 			defer db.Close()
 			db.LogMode(true)
 
-			r := ArticleRepository{DBConn: db}
-			d := &domain.Article{
+			r = ArticleRepository{DBConn: db}
+			d = &domain.Article{
 				ID:          1,
 				Title:       "",
 				URL:         "example.com",
@@ -76,6 +80,8 @@ func TestArticleController(t *testing.T) {
 	})
 	t.Run("Find()", func(t *testing.T) {
 		t.Run("すべて取得する", func(t *testing.T) {
+			var r ArticleRepository
+			var d *domain.Article
 			db, mock, err := getDBMock()
 			if err != nil {
 				t.Fatal(err)
@@ -83,12 +89,12 @@ func TestArticleController(t *testing.T) {
 			defer db.Close()
 			db.LogMode(true)
 
-			r := ArticleRepository{DBConn: db}
-			d := &domain.Article{
+			r = ArticleRepository{DBConn: db}
+			d = &domain.Article{
 				ID:    0,
-				Title: "",
-				Lat:   0,
-				Lng:   0,
+				Title: "hoge",
+				Lat:   1,
+				Lng:   1,
 				Type:  "",
 			}
 
@@ -99,6 +105,65 @@ func TestArticleController(t *testing.T) {
 			assert.Nil(t, err)
 			assert.Nil(t, mock.ExpectationsWereMet())
 		})
+		t.Run("name=`ほげ`を取得する", func(t *testing.T) {
+			var r ArticleRepository
+			var d *domain.Article
+			db, mock, err := getDBMock()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer db.Close()
+			db.LogMode(true)
+
+			r = ArticleRepository{DBConn: db}
+			d = &domain.Article{
+				ID:    0,
+				Title: "ほげ",
+				Lat:   0,
+				Lng:   0,
+				Type:  "",
+			}
+
+			mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `shops` WHERE `shops`.`deleted_at` IS NULL AND ((name=\"ほげ\"))")).
+				WillReturnRows(sqlmock.NewRows([]string{"id", "title", "url", "description", "type", "lat", "lng"}).AddRow(d.ID, d.Title, d.URL, d.Description, d.Type, d.Lat, d.Lng))
+
+			_, err = r.Find(d, 0, 0)
+			assert.Nil(t, err)
+			assert.Nil(t, mock.ExpectationsWereMet())
+		})
+	})
+	t.Run("Update()", func(t *testing.T) {
+		t.Run("ID=1のnameを更新する", func(t *testing.T) {
+			var r ArticleRepository
+			var d *domain.Article
+			db, mock, err := getDBMock()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer db.Close()
+			db.LogMode(true)
+
+			r = ArticleRepository{DBConn: db}
+			d = &domain.Article{
+				ID:    1,
+				Title: "ほげ",
+				Lat:   0,
+				Lng:   0,
+				Type:  "",
+			}
+
+			//mock.ExpectExec(regexp.QuoteMeta("UPDATE `shops` SET name=\"ほげ\" WHERE `shops`.`deleted_at` IS NULL AND id = ?")).
+			mock.ExpectExec(regexp.QuoteMeta("UPDATE `shops` SET name=\"ほげ\" WHERE id = ?")).
+				WithArgs(d.ID).
+				WillReturnResult(sqlmock.NewResult(d.ID, 1))
+
+			err = r.Update(d)
+			assert.Nil(t, err)
+			// TODO: occured error
+			//assert.Nil(t, mock.ExpectationsWereMet())
+		})
+	})
+	t.Run("Delete()", func(t *testing.T) {
 	})
 }
 

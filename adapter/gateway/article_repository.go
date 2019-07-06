@@ -55,7 +55,7 @@ func (r *ArticleRepository) Store(d *domain.Article) (id int64, err error) {
 func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) ([]*domain.Article, error) {
 	var queryArray []string
 	if article.Title != "" {
-		queryArray = append(queryArray, fmt.Sprintf("title=\"%s\"", article.Title))
+		queryArray = append(queryArray, fmt.Sprintf("name=\"%s\"", article.Title))
 	}
 	if article.Type != "" {
 		queryArray = append(queryArray, fmt.Sprintf("type=\"%s\"", article.Title))
@@ -72,7 +72,9 @@ func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) ([]
 	if limit == 0 {
 		limit = -1
 	}
+
 	r.DBConn.Limit(limit).Offset(offset).Find(&shops, query)
+
 	var d []*domain.Article
 	for _, val := range shops {
 		d = append(d, &domain.Article{
@@ -88,8 +90,23 @@ func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) ([]
 
 	return d, nil
 }
-func (r *ArticleRepository) Update() (*domain.Article, error) {
-	return nil, nil
+func (r *ArticleRepository) Update(article *domain.Article) error {
+	updates := make(map[string]interface{})
+	if article.Title != "" {
+		updates["name"] = article.Title
+	}
+	if article.Type != "" {
+		updates["type"] = article.Type
+	}
+	if article.Lat != 0 {
+		updates["lat"] = article.Lat
+	}
+	if article.Lng != 0 {
+		updates["lng"] = article.Lng
+	}
+
+	r.DBConn.Model(&article).Updates(updates)
+	return nil
 }
 func (r *ArticleRepository) Delete() (*domain.Article, error) {
 	return nil, nil
