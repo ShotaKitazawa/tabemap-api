@@ -34,25 +34,34 @@ type (
 	}
 )
 
-func (r *ArticleRepository) Store(d *domain.Article) (id int64, err error) {
-	s := &Shop{
-		Name:        d.Title,
-		URL:         d.URL,
-		Description: d.Description,
-		Type:        d.Type,
-		Lat:         d.Lat,
-		Lng:         d.Lng,
+func (r *ArticleRepository) Store(article *domain.Article) (result *domain.Article, err error) {
+	shop := &Shop{
+		Name:        article.Title,
+		URL:         article.URL,
+		Description: article.Description,
+		Type:        article.Type,
+		Lat:         article.Lat,
+		Lng:         article.Lng,
 	}
-	if err = ErrNameIsEmpty; s.Name == "" {
+	if err = ErrNameIsEmpty; shop.Name == "" {
 		return
 	}
-	if err = r.DBConn.Create(s).Error; err != nil {
+	if err = r.DBConn.Create(shop).Error; err != nil {
 		return
 	}
-
-	return int64(s.ID), nil
+	return &domain.Article{
+		ID:          int64(shop.ID),
+		Title:       shop.Name,
+		URL:         shop.URL,
+		Description: shop.Description,
+		Type:        shop.Type,
+		Lat:         shop.Lat,
+		Lng:         shop.Lng,
+		CreatedAt:   shop.CreatedAt,
+	}, nil
 }
-func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) ([]*domain.Article, error) {
+
+func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) (results []*domain.Article, err error) {
 	var queryArray []string
 	if article.Title != "" {
 		queryArray = append(queryArray, fmt.Sprintf("name=\"%s\"", article.Title))
@@ -67,14 +76,13 @@ func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) ([]
 		queryArray = append(queryArray, fmt.Sprintf("lng=\"%g\"", article.Lng))
 	}
 	query := strings.Join(queryArray, " and ")
-
 	shops := []Shop{}
 	if limit == 0 {
 		limit = -1
 	}
-
-	r.DBConn.Limit(limit).Offset(offset).Find(&shops, query)
-
+	if err = r.DBConn.Limit(limit).Offset(offset).Find(&shops, query).Error; err != nil {
+		return
+	}
 	var d []*domain.Article
 	for _, val := range shops {
 		d = append(d, &domain.Article{
@@ -85,29 +93,50 @@ func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) ([]
 			Type:        val.Type,
 			Lat:         val.Lat,
 			Lng:         val.Lng,
+			CreatedAt:   val.CreatedAt,
 		})
 	}
-
 	return d, nil
 }
-func (r *ArticleRepository) Update(article *domain.Article) error {
-	updates := make(map[string]interface{})
+
+func (r *ArticleRepository) Update(article *domain.Article) (result *domain.Article, err error) {
+	shop := &Shop{
+		Name:        article.Title,
+		URL:         article.URL,
+		Description: article.Description,
+		Type:        article.Type,
+		Lat:         article.Lat,
+		Lng:         article.Lng,
+	}
+	query := make(map[string]interface{})
 	if article.Title != "" {
-		updates["name"] = article.Title
+		query["name"] = article.Title
 	}
 	if article.Type != "" {
-		updates["type"] = article.Type
+		query["type"] = article.Type
 	}
 	if article.Lat != 0 {
-		updates["lat"] = article.Lat
+		query["lat"] = article.Lat
 	}
 	if article.Lng != 0 {
-		updates["lng"] = article.Lng
+		query["lng"] = article.Lng
 	}
-
-	r.DBConn.Model(&article).Updates(updates)
-	return nil
+	if err = r.DBConn.Model(&shop).Updates(query).Error; err != nil {
+		return
+	}
+	return &domain.Article{
+		ID:          int64(shop.ID),
+		Title:       shop.Name,
+		URL:         shop.URL,
+		Description: shop.Description,
+		Type:        shop.Type,
+		Lat:         shop.Lat,
+		Lng:         shop.Lng,
+		CreatedAt:   shop.CreatedAt,
+		UpdatedAt:   shop.UpdatedAt,
+	}, nil
 }
-func (r *ArticleRepository) Delete() (*domain.Article, error) {
+
+func (r *ArticleRepository) Delete(id int) (result *domain.Article, err error) {
 	return nil, nil
 }

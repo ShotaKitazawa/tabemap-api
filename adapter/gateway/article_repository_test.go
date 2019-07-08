@@ -152,18 +152,18 @@ func TestArticleController(t *testing.T) {
 				Type:  "",
 			}
 
-			//mock.ExpectExec(regexp.QuoteMeta("UPDATE `shops` SET name=\"ほげ\" WHERE `shops`.`deleted_at` IS NULL AND id = ?")).
 			mock.ExpectExec(regexp.QuoteMeta("UPDATE `shops` SET name=\"ほげ\" WHERE id = ?")).
 				WithArgs(d.ID).
 				WillReturnResult(sqlmock.NewResult(d.ID, 1))
 
-			err = r.Update(d)
+			_, err = r.Update(d)
 			assert.Nil(t, err)
 			// TODO: occured error
 			//assert.Nil(t, mock.ExpectationsWereMet())
 		})
 	})
 	t.Run("Delete()", func(t *testing.T) {
+		// TODO
 	})
 }
 
