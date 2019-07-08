@@ -10,10 +10,14 @@ import (
 	"github.com/ShotaKitazawa/tabemap-api/domain"
 )
 
-var ErrNameIsEmpty error
+var (
+	ErrNameIsEmpty error
+	ErrIDIsEmpty   error
+)
 
 func init() {
 	ErrNameIsEmpty = errors.New("Name is empty")
+	ErrIDIsEmpty = errors.New("ID is empty")
 }
 
 type (
@@ -61,8 +65,11 @@ func (r *ArticleRepository) Store(article *domain.Article) (result *domain.Artic
 	}, nil
 }
 
-func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) (results []*domain.Article, err error) {
+func (r *ArticleRepository) Search(article *domain.Article, limit, offset int) (results []*domain.Article, err error) {
 	var queryArray []string
+	if article.ID != 0 {
+		queryArray = append(queryArray, fmt.Sprintf("id=\"%d\"", article.ID))
+	}
 	if article.Title != "" {
 		queryArray = append(queryArray, fmt.Sprintf("name=\"%s\"", article.Title))
 	}
@@ -79,6 +86,9 @@ func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) (re
 	shops := []Shop{}
 	if limit == 0 {
 		limit = -1
+	}
+	if offset == 0 {
+		offset = -1
 	}
 	if err = r.DBConn.Limit(limit).Offset(offset).Find(&shops, query).Error; err != nil {
 		return
@@ -101,6 +111,9 @@ func (r *ArticleRepository) Find(article *domain.Article, limit, offset int) (re
 
 func (r *ArticleRepository) Update(article *domain.Article) (result *domain.Article, err error) {
 	shop := &Shop{
+		Model: gorm.Model{
+			ID: uint(article.ID),
+		},
 		Name:        article.Title,
 		URL:         article.URL,
 		Description: article.Description,
@@ -109,8 +122,19 @@ func (r *ArticleRepository) Update(article *domain.Article) (result *domain.Arti
 		Lng:         article.Lng,
 	}
 	query := make(map[string]interface{})
+	if article.ID == 0 {
+		return nil, ErrIDIsEmpty
+	} else {
+		query["id"] = article.ID
+	}
 	if article.Title != "" {
 		query["name"] = article.Title
+	}
+	if article.URL != "" {
+		query["url"] = article.URL
+	}
+	if article.Description != "" {
+		query["description"] = article.Description
 	}
 	if article.Type != "" {
 		query["type"] = article.Type
@@ -137,6 +161,24 @@ func (r *ArticleRepository) Update(article *domain.Article) (result *domain.Arti
 	}, nil
 }
 
-func (r *ArticleRepository) Delete(id int) (result *domain.Article, err error) {
-	return nil, nil
+func (r *ArticleRepository) Delete(article *domain.Article) (result *domain.Article, err error) {
+	shop := &Shop{
+		Model: gorm.Model{
+			ID: uint(article.ID),
+		},
+	}
+	if err = r.DBConn.Delete(&shop).Error; err != nil {
+		return
+	}
+	return &domain.Article{
+		ID:          int64(shop.ID),
+		Title:       shop.Name,
+		URL:         shop.URL,
+		Description: shop.Description,
+		Type:        shop.Type,
+		Lat:         shop.Lat,
+		Lng:         shop.Lng,
+		CreatedAt:   shop.CreatedAt,
+		UpdatedAt:   shop.UpdatedAt,
+	}, nil
 }

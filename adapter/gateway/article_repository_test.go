@@ -101,7 +101,7 @@ func TestArticleController(t *testing.T) {
 			mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `shops`")).
 				WillReturnRows(sqlmock.NewRows([]string{"id", "title", "url", "description", "type", "lat", "lng"}).AddRow(d.ID, d.Title, d.URL, d.Description, d.Type, d.Lat, d.Lng))
 
-			_, err = r.Find(d, 0, 0)
+			_, err = r.Search(d, 0, 0)
 			assert.Nil(t, err)
 			assert.Nil(t, mock.ExpectationsWereMet())
 		})
@@ -127,7 +127,7 @@ func TestArticleController(t *testing.T) {
 			mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `shops` WHERE `shops`.`deleted_at` IS NULL AND ((name=\"ほげ\"))")).
 				WillReturnRows(sqlmock.NewRows([]string{"id", "title", "url", "description", "type", "lat", "lng"}).AddRow(d.ID, d.Title, d.URL, d.Description, d.Type, d.Lat, d.Lng))
 
-			_, err = r.Find(d, 0, 0)
+			_, err = r.Search(d, 0, 0)
 			assert.Nil(t, err)
 			assert.Nil(t, mock.ExpectationsWereMet())
 		})

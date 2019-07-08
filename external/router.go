@@ -27,6 +27,7 @@ func init() {
 
 	v.POST("/article", func(c *gin.Context) { ArticleController.Create(c) })
 	v.GET("/article", func(c *gin.Context) { ArticleController.Read(c) })
+	v.GET("/article/:id", func(c *gin.Context) { ArticleController.Read(c) })
 	v.PUT("/article", func(c *gin.Context) { ArticleController.Update(c) })
 	v.DELETE("/article", func(c *gin.Context) { ArticleController.Delete(c) })
 
