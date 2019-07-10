@@ -33,3 +33,9 @@ func init() {
 
 	Router = r
 }
+
+func Run(addr string) {
+	defer sqlite.CloseConn()
+	// defer mysql.CloseConn()
+	Router.Run(addr)
+}

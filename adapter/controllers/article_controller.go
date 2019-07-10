@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -67,7 +68,7 @@ func (controller *ArticleController) Create(c interfaces.Context) {
 	result, err := controller.Interactor.Add(article)
 	if err != nil {
 		controller.Interactor.Logger.Log(errors.Wrap(err, "article_controller: cannot get data"))
-		c.JSON(500, NewError(500, err.Error()))
+		c.JSON(http.StatusInternalServerError, NewError(http.StatusInternalServerError, err.Error()))
 		return
 	}
 
@@ -81,7 +82,7 @@ func (controller *ArticleController) Create(c interfaces.Context) {
 		Lng:         result.Lng,
 		CreatedAt:   result.CreatedAt,
 	}
-	c.JSON(201, res)
+	c.JSON(http.StatusCreated, res)
 
 	return
 }
@@ -127,7 +128,7 @@ func (controller *ArticleController) Read(c interfaces.Context) {
 	if idStr := c.Param("id"); idStr != "" {
 		if id, err := strconv.ParseInt(idStr, 10, 64); err != nil {
 			controller.Interactor.Logger.Log(errors.Wrap(err, "article_controller: cannot cast string to int64"))
-			c.JSON(500, NewError(500, err.Error()))
+			c.JSON(http.StatusInternalServerError, NewError(http.StatusInternalServerError, err.Error()))
 			return
 		} else {
 			article.ID = id
@@ -136,7 +137,7 @@ func (controller *ArticleController) Read(c interfaces.Context) {
 	results, err := controller.Interactor.Find(article, req.Limit, req.Offset)
 	if err != nil {
 		controller.Interactor.Logger.Log(errors.Wrap(err, "article_controller: cannot get data"))
-		c.JSON(500, NewError(500, err.Error()))
+		c.JSON(http.StatusInternalServerError, NewError(http.StatusInternalServerError, err.Error()))
 		return
 	}
 
@@ -153,7 +154,7 @@ func (controller *ArticleController) Read(c interfaces.Context) {
 			CreatedAt:   result.CreatedAt,
 		})
 	}
-	c.JSON(200, res)
+	c.JSON(http.StatusOK, res)
 
 	return
 }
@@ -185,7 +186,7 @@ func (controller *ArticleController) Update(c interfaces.Context) {
 	c.Bind(&req)
 
 	article := &domain.Article{
-		ID:    req.ID,
+		ID:          req.ID,
 		Title:       req.Title,
 		URL:         req.URL,
 		Description: req.Description,
@@ -199,7 +200,7 @@ func (controller *ArticleController) Update(c interfaces.Context) {
 	result, err := controller.Interactor.Update(article)
 	if err != nil {
 		controller.Interactor.Logger.Log(errors.Wrap(err, "article_controller: cannot get data"))
-		c.JSON(500, NewError(500, err.Error()))
+		c.JSON(http.StatusInternalServerError, NewError(http.StatusInternalServerError, err.Error()))
 		return
 	}
 
@@ -214,7 +215,7 @@ func (controller *ArticleController) Update(c interfaces.Context) {
 		CreatedAt:   result.CreatedAt,
 		UpdatedAt:   result.UpdatedAt,
 	}
-	c.JSON(202, res)
+	c.JSON(http.StatusAccepted, res)
 
 	return
 }
@@ -246,7 +247,7 @@ func (controller *ArticleController) Delete(c interfaces.Context) {
 	result, err := controller.Interactor.Delete(article)
 	if err != nil {
 		controller.Interactor.Logger.Log(errors.Wrap(err, "article_controller: cannot get data"))
-		c.JSON(500, NewError(500, err.Error()))
+		c.JSON(http.StatusInternalServerError, NewError(http.StatusInternalServerError, err.Error()))
 		return
 	}
 
@@ -259,7 +260,7 @@ func (controller *ArticleController) Delete(c interfaces.Context) {
 		Lat:         result.Lat,
 		Lng:         result.Lng,
 	}
-	c.JSON(202, res)
+	c.JSON(http.StatusAccepted, res)
 
 	return
 }
