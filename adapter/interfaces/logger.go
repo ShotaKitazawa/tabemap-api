@@ -1,5 +1,8 @@
 package interfaces
 
 type Logger interface {
-	Log(args ...interface{})
+	Debug(args ...interface{})
+	Info(args ...interface{})
+	Warn(args ...interface{})
+	Error(args ...interface{})
 }

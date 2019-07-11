@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -62,12 +61,12 @@ func (controller *ArticleController) Create(c interfaces.Context) {
 		Lat:         req.Lat,
 		Lng:         req.Lng,
 	}
-	fmt.Println(req)
-	fmt.Println(article)
+	controller.Interactor.Logger.Debug(req)
+	controller.Interactor.Logger.Debug(article)
 
 	result, err := controller.Interactor.Add(article)
 	if err != nil {
-		controller.Interactor.Logger.Log(errors.Wrap(err, "article_controller: cannot get data"))
+		controller.Interactor.Logger.Error(errors.Wrap(err, "article_controller: cannot get data"))
 		c.JSON(http.StatusInternalServerError, NewError(http.StatusInternalServerError, err.Error()))
 		return
 	}
@@ -122,12 +121,12 @@ func (controller *ArticleController) Read(c interfaces.Context) {
 		Lat:   req.Lat,
 		Lng:   req.Lng,
 	}
-	fmt.Println(req)
-	fmt.Println(article)
+	controller.Interactor.Logger.Debug(req)
+	controller.Interactor.Logger.Debug(article)
 
 	if idStr := c.Param("id"); idStr != "" {
 		if id, err := strconv.ParseInt(idStr, 10, 64); err != nil {
-			controller.Interactor.Logger.Log(errors.Wrap(err, "article_controller: cannot cast string to int64"))
+			controller.Interactor.Logger.Error(errors.Wrap(err, "article_controller: cannot cast string to int64"))
 			c.JSON(http.StatusInternalServerError, NewError(http.StatusInternalServerError, err.Error()))
 			return
 		} else {
@@ -136,7 +135,7 @@ func (controller *ArticleController) Read(c interfaces.Context) {
 	}
 	results, err := controller.Interactor.Find(article, req.Limit, req.Offset)
 	if err != nil {
-		controller.Interactor.Logger.Log(errors.Wrap(err, "article_controller: cannot get data"))
+		controller.Interactor.Logger.Error(errors.Wrap(err, "article_controller: cannot get data"))
 		c.JSON(http.StatusInternalServerError, NewError(http.StatusInternalServerError, err.Error()))
 		return
 	}
@@ -194,12 +193,12 @@ func (controller *ArticleController) Update(c interfaces.Context) {
 		Lat:         req.Lat,
 		Lng:         req.Lng,
 	}
-	fmt.Println(req)
-	fmt.Println(article)
+	controller.Interactor.Logger.Debug(req)
+	controller.Interactor.Logger.Debug(article)
 
 	result, err := controller.Interactor.Update(article)
 	if err != nil {
-		controller.Interactor.Logger.Log(errors.Wrap(err, "article_controller: cannot get data"))
+		controller.Interactor.Logger.Error(errors.Wrap(err, "article_controller: cannot get data"))
 		c.JSON(http.StatusInternalServerError, NewError(http.StatusInternalServerError, err.Error()))
 		return
 	}
@@ -241,12 +240,12 @@ func (controller *ArticleController) Delete(c interfaces.Context) {
 	article := &domain.Article{
 		ID: req.ID,
 	}
-	fmt.Println(req)
-	fmt.Println(article)
+	controller.Interactor.Logger.Debug(req)
+	controller.Interactor.Logger.Debug(article)
 
 	result, err := controller.Interactor.Delete(article)
 	if err != nil {
-		controller.Interactor.Logger.Log(errors.Wrap(err, "article_controller: cannot get data"))
+		controller.Interactor.Logger.Error(errors.Wrap(err, "article_controller: cannot get data"))
 		c.JSON(http.StatusInternalServerError, NewError(http.StatusInternalServerError, err.Error()))
 		return
 	}

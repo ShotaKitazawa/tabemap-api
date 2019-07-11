@@ -10,6 +10,14 @@
   version = "v1.3.3"
 
 [[projects]]
+  branch = "master"
+  digest = "1:3a60921f3c99de45d26b372450e666196a123def1edc2fb543c33db4a93813a7"
+  name = "github.com/comail/colog"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "fba8e7b1f46c3607f09760ce3880066e7ff57c5a"
+
+[[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
@@ -189,6 +197,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/DATA-DOG/go-sqlmock",
+    "github.com/comail/colog",
     "github.com/gin-contrib/cors",
     "github.com/gin-gonic/gin",
     "github.com/jinzhu/gorm",
