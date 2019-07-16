@@ -51,8 +51,10 @@ func TestArticleController(t *testing.T) {
 
 			result, err := r.Store(d)
 			assert.Nil(t, err)
-			result.CreatedAt = d.CreatedAt
-			result.UpdatedAt = d.UpdatedAt
+			if result != nil {
+				result.CreatedAt = d.CreatedAt
+				result.UpdatedAt = d.UpdatedAt
+			}
 			assert.Equal(t, d, result)
 		})
 		t.Run("保存する(異常系)", func(t *testing.T) {
@@ -187,7 +189,8 @@ func getDBMock() (*gorm.DB, sqlmock.Sqlmock, error) {
 		return nil, nil, err
 	}
 
-	gdb, err := gorm.Open("sqlite3", db)
+	//gdb, err := gorm.Open("sqlite3", db)
+	gdb, err := gorm.Open("mysql", db)
 	if err != nil {
 		return nil, nil, err
 	}

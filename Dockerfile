@@ -2,7 +2,7 @@
 # Builder container
 ###############################
 
-From golang:1.9 as builder
+FROM golang:1.12.7 AS builder
 RUN apt-get update
 WORKDIR /go/src/app
 COPY . .
@@ -19,7 +19,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
 # Exec container
 ###############################
 
-From alpine:latest
+FROM alpine:latest
 EXPOSE 8080
 COPY --from=builder /go/src/app/app /app
 CMD ["/app"]

@@ -2,7 +2,7 @@ def mysql_version = "5.7.26"
 podTemplate(
   label: 'label',
   containers: [
-    containerTemplate(name: 'golang', image: 'golang:1.12.7-alpine', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'golang', image: 'golang:1.12.7', ttyEnabled: true, command: 'cat'),
     containerTemplate(name: 'diuid', image: 'weberlars/diuid:latest', ttyEnabled: true, command: 'cat'),
     containerTemplate(name: 'postman', image: 'postman/newman:4.5.1-alpine', ttyEnabled: true, command: 'cat')
   ]
@@ -25,8 +25,7 @@ podTemplate(
       stage('Unit Test') {
         container('golang') {
           sh """
-            go get -u github.com/golang/dep/cmd/dep
-            dep ensure
+            GO111MODULE=on go mod init
             go test -v -cover ./...
           """
         }
