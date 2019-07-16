@@ -2,9 +2,10 @@ def mysql_version = "5.7.26"
 podTemplate(
   label: 'label',
   containers: [
-    containerTemplate(name: 'golang', image: 'golang:1.12.7', ttyEnabled: true, command: 'cat'),
-    containerTemplate(name: 'diuid', image: 'weberlars/diuid:latest', ttyEnabled: true, command: 'cat'),
-    containerTemplate(name: 'postman', image: 'postman/newman:4.5.1-alpine', ttyEnabled: true, command: 'cat')
+    containerTemplate(name: 'golang', image: 'golang:1.12.7-alpine', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'mysql', image: 'mysql:5.7.26', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'postman', image: 'postman/newman:4.5.1-alpine', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:latest', ttyEnabled: true, command: 'cat')
   ]
 ) {
   node ('label') {
@@ -25,24 +26,21 @@ podTemplate(
       stage('Unit Test') {
         container('golang') {
           sh """
-            GO111MODULE=on go mod init
             go test -v -cover ./...
           """
         }
       }
       stage('Build') {
-        container('diuid') {
+        container('golang') {
           sh """
-            docker build . -t kanatakita/tabemap-api:latest
+            go build -o tabemap-api main.go
           """
         }
       }
       stage('Run') {
-        container('diuid') {
+        container('golang') {
           sh """
-            docker pull mysql:${mysql_version}
-            docker run --rm -p 8080:8080 kanatakita/tabemap-api:latest
-            docker run --rm -p 3306:3306 mysql:${mysql_version}
+            ./tabemap-api #TODO
           """
         }
       }
