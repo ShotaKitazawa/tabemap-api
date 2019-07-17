@@ -34,17 +34,17 @@ podTemplate(
         }
       }
       git 'https://github.com/ShotaKitazawa/tabemap-api'
+      stage('Build') {
+        container('golang') {
+          sh """
+            CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o tabemap-api .
+          """
+        }
+      }
       stage('Unit & Integration Test') {
         container('golang') {
           sh """
             go test -v -cover ./...
-          """
-        }
-      }
-      stage('Build') {
-        container('golang') {
-          sh """
-            go build -o tabemap-api main.go
           """
         }
       }
