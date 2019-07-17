@@ -5,8 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/ShotaKitazawa/tabemap-api/adapter/controllers"
-	// "github.com/ShotaKitazawa/tabemap-api/external/mysql"
-	"github.com/ShotaKitazawa/tabemap-api/external/sqlite"
+	"github.com/ShotaKitazawa/tabemap-api/external/mysql"
 )
 
 // Router called by main.go
@@ -20,8 +19,7 @@ func init() {
 
 	logger := &Logger{}
 
-	// dbConn := mysql.Connect(mysql.GetEnv())
-	dbConn := sqlite.Connect(sqlite.GetEnv())
+	dbConn := mysql.Connect(mysql.GetEnv())
 
 	ArticleController := controllers.NewArticleController(dbConn, logger)
 
@@ -35,7 +33,6 @@ func init() {
 }
 
 func Run(addr string) {
-	defer sqlite.CloseConn()
-	// defer mysql.CloseConn()
+	defer mysql.CloseConn()
 	Router.Run(addr)
 }

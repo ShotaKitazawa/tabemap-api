@@ -1,29 +1,40 @@
-def mysql_version = "5.7.26"
 podTemplate(
-  label: 'label',
+  label: 'pipeline',
   containers: [
-    containerTemplate(name: 'golang', image: 'golang:1.12.7-alpine', ttyEnabled: true, command: 'cat'),
-    containerTemplate(name: 'mysql', image: 'mysql:5.7.26', ttyEnabled: true, command: 'cat'),
-    containerTemplate(name: 'postman', image: 'postman/newman:4.5.1-alpine', ttyEnabled: true, command: 'cat'),
-    containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:latest', ttyEnabled: true, command: 'cat')
+    containerTemplate(
+      name: 'golang',
+      image: 'golang:1.12.7',
+      ttyEnabled: true
+      ),
+    containerTemplate(
+      name: 'mysql',
+      image: 'mysql:5.7.26',
+      ttyEnabled: true,
+      envVars: [
+        envVar(key: "MYSQL_ROOT_PASSWORD", value: "password"),
+        envVar(key: "MYSQL_DATABASE", value: "tabemap")
+        ]
+      ),
+    containerTemplate(
+      name: 'skaffold',
+      image: 'docker run gcr.io/k8s-skaffold/skaffold:latest',
+      ttyEnabled: true,
+      command: 'cat'
+      )
   ]
 ) {
-  node ('label') {
+  node ('pipeline') {
     withCredentials([
       usernamePassword(credentialsId: 'docker_id', usernameVariable: 'DOCKER_ID_USR', passwordVariable: 'DOCKER_ID_PSW')
     ]) {
-      stage('Info') {
-        container('diuid') {
+      stage('Provisioning') {
+        container('golang') {
           sh """
-            uname -a
-            whoami
-            pwd
-            ls -al
           """
         }
       }
       git 'https://github.com/ShotaKitazawa/tabemap-api'
-      stage('Unit Test') {
+      stage('Unit & Integration Test') {
         container('golang') {
           sh """
             go test -v -cover ./...
@@ -37,22 +48,11 @@ podTemplate(
           """
         }
       }
-      stage('Run') {
-        container('golang') {
+      stage('Skaffold Run') {
+        container('skaffold') {
           sh """
-            ./tabemap-api #TODO
-          """
-        }
-      }
-      stage('Integration Test') {
-        container('postman') {
-          sh """
-          """
-        }
-      }
-      stage('Push') {
-        container('diuid') {
-          sh """
+            docker login --username=$DOCKER_ID_USR --password=$DOCKER_ID_PSW
+            kubectl get pod --all-namespaces
           """
         }
       }
