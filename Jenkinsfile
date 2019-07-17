@@ -17,7 +17,7 @@ podTemplate(
       ),
     containerTemplate(
       name: 'skaffold',
-      image: 'docker run gcr.io/k8s-skaffold/skaffold:latest',
+      image: 'gcr.io/k8s-skaffold/skaffold:latest',
       ttyEnabled: true,
       command: 'cat'
       )
