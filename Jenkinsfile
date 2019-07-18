@@ -53,6 +53,8 @@ podTemplate(
           sh """
             docker login --username=$DOCKER_ID_USR --password=$DOCKER_ID_PSW
             # TODO
+            docker build -t kanatakita/tabemap-api .
+            docker push kanatakita/tabemap-api
             kubectl apply -f kubernetes/manifest/manifest.yaml
           """
         }
