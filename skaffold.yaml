@@ -2,15 +2,18 @@ apiVersion: skaffold/v1beta12
 kind: Config
 build:
   artifacts:
-  - image: docker.io/kanatakita/tabemap-api
+  #- image: docker.io/kanatakita/tabemap-api
+  - image: kanatakita/tabemap-api
     context: .
     docker:
       dockerfile: ./kubernetes/container/Dockerfile
   tagPolicy:
-    #gitCommit:
-    #  variant: Tags
-    envTemplate:
-      template: latest
+    gitCommit:
+      variant: Tags
+    #envTemplate:
+    #  template: latest
+  local:
+    push: true
 deploy:
   kubectl:
     manifests:
