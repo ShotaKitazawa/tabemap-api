@@ -83,5 +83,5 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: tabemap
+          serviceName: tabemap-api
           servicePort: 8080
