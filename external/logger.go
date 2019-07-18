@@ -3,7 +3,6 @@ package external
 import (
 	"log"
 
-	"github.com/ShotaKitazawa/tabemap-api/utils"
 	"github.com/comail/colog"
 )
 
@@ -29,8 +28,10 @@ func init() {
 		Flag:   log.Ldate | log.Ltime | log.Lshortfile,
 	})
 	colog.Register()
+}
 
-	switch utils.GetEnvOrDefault("LOG_MIN_LEVEL", "info") {
+func (Logger) setLoglevel(level string) error {
+	switch level {
 	case "debug":
 		log.Println("info: Set Minimum LogLevel: Debug")
 		colog.SetMinLevel(colog.LDebug)
@@ -48,4 +49,5 @@ func init() {
 		colog.SetMinLevel(colog.LInfo)
 	}
 	colog.Register()
+	return nil
 }

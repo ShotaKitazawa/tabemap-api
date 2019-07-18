@@ -52,7 +52,8 @@ podTemplate(
         container('skaffold') {
           sh """
             docker login --username=$DOCKER_ID_USR --password=$DOCKER_ID_PSW
-            kubectl get pod --all-namespaces
+            # TODO
+            kubectl apply -f kubernetes/manifest/manifest.yaml
           """
         }
       }

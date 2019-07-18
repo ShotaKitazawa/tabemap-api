@@ -6,6 +6,7 @@ import (
 
 	"github.com/ShotaKitazawa/tabemap-api/adapter/controllers"
 	"github.com/ShotaKitazawa/tabemap-api/external/mysql"
+	"github.com/ShotaKitazawa/tabemap-api/utils"
 )
 
 // Router called by main.go
@@ -18,6 +19,7 @@ func init() {
 	v := r.Group("/api")
 
 	logger := &Logger{}
+	logger.setLoglevel(utils.GetEnvOrDefault("LOG_MIN_LEVEL", "info"))
 
 	dbConn := mysql.Connect(mysql.GetEnv())
 
