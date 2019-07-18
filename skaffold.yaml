@@ -6,6 +6,11 @@ build:
     workspace: .
     docker:
       dockerfilePath: ./kubernetes/container/Dockerfile
+  tagPolicy:
+    gitCommit:
+      variant: Tags
+    envTemplate:
+      template: latest
 deploy:
   kubectl:
     manifests:
