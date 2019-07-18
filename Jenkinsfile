@@ -52,10 +52,7 @@ podTemplate(
         container('skaffold') {
           sh """
             docker login --username=$DOCKER_ID_USR --password=$DOCKER_ID_PSW
-            # TODO
-            docker build -t kanatakita/hello-container -f kubernetes/container/Dockerfile .
-            docker push kanatakita/tabemap-api
-            kubectl apply -f kubernetes/manifest/manifest.yaml
+            skaffold dev
           """
         }
       }

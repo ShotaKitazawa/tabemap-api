@@ -1,0 +1,12 @@
+apiVersion: skaffold/v1alpha2
+kind: Config
+build:
+  artifacts:
+  - imageName: docker.io/kanatakita/tabemap-api
+    workspace: .
+    docker:
+      dockerfilePath: ./kubernetes/container/Dockerfile
+deploy:
+  kubectl:
+    manifests:
+      - ./kubernetes/manifest/manifest.yaml
