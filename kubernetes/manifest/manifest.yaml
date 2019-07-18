@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       labels:
-        app: fluentd
+        app: tabemap-api
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
