@@ -7,8 +7,8 @@ build:
     docker:
       dockerfile: ./kubernetes/container/Dockerfile
   tagPolicy:
-    gitCommit:
-      variant: Tags
+    #gitCommit:
+    #  variant: Tags
     envTemplate:
       template: latest
 deploy:
