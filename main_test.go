@@ -30,11 +30,20 @@ func TestArticleController(t *testing.T) {
 		var req *http.Request
 		var rec *httptest.ResponseRecorder
 		var b []byte
-		var reqDomainArticle, resDomainArticle, expected domain.Article
+		var request, expectedResponse, actualResponse domain.Article
 		// var reqDomainArticles, resDomainArticles, expecteds []domain.Article
 		var err error
 
-		reqDomainArticle = domain.Article{
+		// 1. Create
+		request = domain.Article{
+			Title:       "test",
+			URL:         "http://example.com",
+			Description: "for test",
+			Type:        "Japanese",
+			Lat:         1.1,
+			Lng:         -1.1,
+		}
+		expectedResponse = domain.Article{
 			ID:          1,
 			Title:       "test",
 			URL:         "http://example.com",
@@ -43,40 +52,53 @@ func TestArticleController(t *testing.T) {
 			Lat:         1.1,
 			Lng:         -1.1,
 		}
-		resDomainArticle = domain.Article{
-			ID:          1,
-			Title:       "test",
-			URL:         "http://example.com",
-			Description: "for test",
-			Type:        "Japanese",
-			Lat:         1.1,
-			Lng:         -1.1,
-		}
-
-		b, err = json.Marshal(&reqDomainArticle)
+		b, err = json.Marshal(&request)
 		assert.Nil(t, err)
 		req = httptest.NewRequest("POST", "/api/article", bytes.NewReader(b))
 		req.Header.Set("Content-Type", "application/json")
-
 		rec = httptest.NewRecorder()
 		r.ServeHTTP(rec, req)
 		assert.Equal(t, http.StatusCreated, rec.Code)
-		json.NewDecoder(rec.Body).Decode(&expected)
-		expected.CreatedAt = resDomainArticle.CreatedAt
-		expected.UpdatedAt = resDomainArticle.UpdatedAt
-		assert.Equal(t, resDomainArticle, expected)
+		json.NewDecoder(rec.Body).Decode(&actualResponse)
+		actualResponse.CreatedAt = expectedResponse.CreatedAt
+		actualResponse.UpdatedAt = expectedResponse.UpdatedAt
+		assert.Equal(t, expectedResponse, actualResponse)
 
-		//req = httptest.NewRequest("POST", "/api/article", nil)
-		//rec = httptest.NewRecorder()
-		//r.ServeHTTP(rec, req)
-		//assert.Equal(t, http.StatusOK, rec.Code)
-		//assert.Equal(t, "", rec.Body.String())
+		// 2. Create
+		request = domain.Article{
+			Title:       "test",
+			URL:         "http://example.net",
+			Description: "for test",
+			Type:        "Chinese",
+			Lat:         1.1,
+			Lng:         -1.1,
+		}
+		expectedResponse = domain.Article{
+			ID:          2,
+			Title:       "test",
+			URL:         "http://example.net",
+			Description: "for test",
+			Type:        "Chinese",
+			Lat:         1.1,
+			Lng:         -1.1,
+		}
+		b, err = json.Marshal(&request)
+		assert.Nil(t, err)
+		req = httptest.NewRequest("POST", "/api/article", bytes.NewReader(b))
+		req.Header.Set("Content-Type", "application/json")
+		rec = httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusCreated, rec.Code)
+		json.NewDecoder(rec.Body).Decode(&actualResponse)
+		actualResponse.CreatedAt = expectedResponse.CreatedAt
+		actualResponse.UpdatedAt = expectedResponse.UpdatedAt
+		assert.Equal(t, expectedResponse, actualResponse)
 
-		//req = httptest.NewRequest("GET", "/api/article", nil)
-		//rec = httptest.NewRecorder()
-		//r.ServeHTTP(rec, req)
-		//assert.Equal(t, http.StatusOK, rec.Code)
-		//assert.Equal(t, "", rec.Body.String())
+		// 3. ReadAll
+		// 4. ReadOne
+		// 5. Update
+		// 6. Delete
+		// 7. ReadAll
 	})
 }
 
