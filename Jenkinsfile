@@ -55,7 +55,7 @@ podTemplate(
         container('skaffold') {
           sh """
             docker login --username=$DOCKER_ID_USR --password=$DOCKER_ID_PSW
-            skaffold dev
+            skaffold run
           """
         }
       }
