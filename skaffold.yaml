@@ -2,10 +2,10 @@ apiVersion: skaffold/v1beta12
 kind: Config
 build:
   artifacts:
-  - imageName: docker.io/kanatakita/tabemap-api
-    workspace: .
+  - image: docker.io/kanatakita/tabemap-api
+    context: .
     docker:
-      dockerfilePath: ./kubernetes/container/Dockerfile
+      dockerfile: ./kubernetes/container/Dockerfile
   tagPolicy:
     gitCommit:
       variant: Tags
