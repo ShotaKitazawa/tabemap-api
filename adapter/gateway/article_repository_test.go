@@ -180,7 +180,35 @@ func TestArticleController(t *testing.T) {
 		})
 	})
 	t.Run("Delete()", func(t *testing.T) {
-		// TODO
+		t.Run("ID=1を削除する", func(t *testing.T) {
+			var r ArticleRepository
+			var d *domain.Article
+			db, mock, err := getDBMock()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer db.Close()
+			db.LogMode(true)
+
+			r = ArticleRepository{DBConn: db}
+			d = &domain.Article{
+				ID: 1,
+			}
+
+			mock.ExpectBegin()
+			mock.ExpectExec(regexp.QuoteMeta("UPDATE `shops` SET `deleted_at`=? WHERE `shops`.`deleted_at` IS NULL AND `shops`.`id` = ?")).
+				WithArgs(d.UpdatedAt, d.ID).
+				WillReturnResult(sqlmock.NewResult(d.ID, 1))
+			mock.ExpectCommit()
+
+			_, err = r.Delete(d)
+			if err != nil {
+				if strings.Index(err.Error(), TimeMismatch) == -1 {
+					t.Fatal(err)
+				}
+			}
+			//assert.Nil(t, mock.ExpectationsWereMet())
+		})
 	})
 }
 
