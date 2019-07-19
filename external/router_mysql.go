@@ -1,3 +1,6 @@
+// +build mysql
+// +build !sqlite
+
 package external
 
 import (

@@ -40,7 +40,7 @@ podTemplate(
       stage('Build') {
         container('golang') {
           sh """
-            CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o tabemap-api .
+            CGO_ENABLED=0 GOOS=linux go build -tags mysql -a -installsuffix cgo -o tabemap-api .
           """
         }
       }
