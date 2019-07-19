@@ -82,6 +82,7 @@ spec:
   - host: tabemap.kanatakita.com
     http:
       paths:
-      - backend:
+      - path: /api
+        backend:
           serviceName: tabemap-api
           servicePort: 8080
