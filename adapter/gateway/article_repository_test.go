@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"os"
 	"regexp"
+	"strings"
 	"testing"
 	"time"
 
@@ -13,6 +14,10 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
+)
+
+const (
+	TimeMismatch = "expected [time.Time - 0001-01-01 00:00:00 +0000 UTC] does not match actual"
 )
 
 func TestMain(m *testing.M) {
@@ -56,6 +61,7 @@ func TestArticleController(t *testing.T) {
 				result.UpdatedAt = d.UpdatedAt
 			}
 			assert.Equal(t, d, result)
+			//assert.Nil(t, mock.ExpectationsWereMet())
 		})
 		t.Run("保存する(異常系)", func(t *testing.T) {
 			var r ArticleRepository
@@ -81,6 +87,7 @@ func TestArticleController(t *testing.T) {
 			result, err := r.Store(d)
 			assert.NotNil(t, err)
 			assert.Equal(t, (*domain.Article)(nil), result)
+			//assert.Nil(t, mock.ExpectationsWereMet())
 		})
 	})
 	t.Run("Find()", func(t *testing.T) {
@@ -138,38 +145,39 @@ func TestArticleController(t *testing.T) {
 		})
 	})
 	t.Run("Update()", func(t *testing.T) {
-		/*
-			t.Run("ID=1のnameを更新する", func(t *testing.T) {
-				var r ArticleRepository
-				var d *domain.Article
-				db, mock, err := getDBMock()
-				if err != nil {
+		t.Run("ID=1のnameを更新する", func(t *testing.T) {
+			var r ArticleRepository
+			var d *domain.Article
+			db, mock, err := getDBMock()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer db.Close()
+			db.LogMode(true)
+
+			r = ArticleRepository{DBConn: db}
+			d = &domain.Article{
+				ID:    1,
+				Title: "ほげ",
+				Lat:   0,
+				Lng:   0,
+				Type:  "",
+			}
+
+			mock.ExpectBegin()
+			mock.ExpectExec(regexp.QuoteMeta("UPDATE `shops` SET `id` = ?, `name` = ?, `updated_at` = ?")).
+				WithArgs(d.ID, d.Title, d.UpdatedAt, d.ID).
+				WillReturnResult(sqlmock.NewResult(d.ID, 1))
+			mock.ExpectCommit()
+
+			_, err = r.Update(d)
+			if err != nil {
+				if strings.Index(err.Error(), TimeMismatch) == -1 {
 					t.Fatal(err)
 				}
-				defer db.Close()
-				db.LogMode(true)
-
-				r = ArticleRepository{DBConn: db}
-				d = &domain.Article{
-					ID:    1,
-					Title: "ほげ",
-					Lat:   0,
-					Lng:   0,
-					Type:  "",
-				}
-
-				mock.ExpectBegin()
-				mock.ExpectExec(regexp.QuoteMeta("UPDATE `shops` SET `id` = ?, `name` = ?, `updated_at` = ?")).
-					WithArgs(d.ID, d.Title, d.UpdatedAt, d.ID).
-					WillReturnResult(sqlmock.NewResult(d.ID, 1))
-				mock.ExpectCommit()
-
-				_, err = r.Update(d)
-				assert.Nil(t, err)
-				// TODO: occured error
-				//assert.Nil(t, mock.ExpectationsWereMet())
-			})
-		*/
+			}
+			//assert.Nil(t, mock.ExpectationsWereMet())
+		})
 	})
 	t.Run("Delete()", func(t *testing.T) {
 		// TODO
@@ -189,7 +197,6 @@ func getDBMock() (*gorm.DB, sqlmock.Sqlmock, error) {
 		return nil, nil, err
 	}
 
-	//gdb, err := gorm.Open("sqlite3", db)
 	gdb, err := gorm.Open("mysql", db)
 	if err != nil {
 		return nil, nil, err

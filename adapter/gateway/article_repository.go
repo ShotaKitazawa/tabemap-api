@@ -122,8 +122,8 @@ func (r *ArticleRepository) Update(article *domain.Article) (result *domain.Arti
 		Lng:         article.Lng,
 	}
 	query := make(map[string]interface{})
-	if article.ID == 0 {
-		return nil, ErrIDIsEmpty
+	if err = ErrIDIsEmpty; article.ID == 0 {
+		return
 	} else {
 		query["id"] = article.ID
 	}
