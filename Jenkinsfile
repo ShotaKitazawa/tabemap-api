@@ -40,14 +40,14 @@ podTemplate(
       stage('Build') {
         container('golang') {
           sh """
-            CGO_ENABLED=0 GOOS=linux go build -tags mysql -a -installsuffix cgo -o tabemap-api .
+            CGO_ENABLED=0 GOOS=linux go build -tags "mysql" -a -installsuffix cgo -o tabemap-api .
           """
         }
       }
       stage('Unit & Integration Test') {
         container('golang') {
           sh """
-            go test -v -cover ./...
+            go test -tags "mysql integration" -v -cover ./...
           """
         }
       }
