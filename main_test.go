@@ -33,7 +33,7 @@ func TestArticleController(t *testing.T) {
 		var rec *httptest.ResponseRecorder
 		var b []byte
 		var request, expectedResponse, actualResponse domain.Article
-		// var reqDomainArticles, resDomainArticles, expecteds []domain.Article
+		var expectedResponses, actualResponses []domain.Article
 		var err error
 
 		// 1. Create
@@ -62,8 +62,7 @@ func TestArticleController(t *testing.T) {
 		r.ServeHTTP(rec, req)
 		assert.Equal(t, http.StatusCreated, rec.Code)
 		json.NewDecoder(rec.Body).Decode(&actualResponse)
-		actualResponse.CreatedAt = expectedResponse.CreatedAt
-		actualResponse.UpdatedAt = expectedResponse.UpdatedAt
+		squashTimeDataOfResponse(&expectedResponse, &actualResponse)
 		assert.Equal(t, expectedResponse, actualResponse)
 
 		// 2. Create
@@ -92,15 +91,137 @@ func TestArticleController(t *testing.T) {
 		r.ServeHTTP(rec, req)
 		assert.Equal(t, http.StatusCreated, rec.Code)
 		json.NewDecoder(rec.Body).Decode(&actualResponse)
-		actualResponse.CreatedAt = expectedResponse.CreatedAt
-		actualResponse.UpdatedAt = expectedResponse.UpdatedAt
+		squashTimeDataOfResponse(&expectedResponse, &actualResponse)
 		assert.Equal(t, expectedResponse, actualResponse)
 
 		// 3. ReadAll
+		expectedResponses = make([]domain.Article, 0)
+		expectedResponses = append(expectedResponses, domain.Article{
+			ID:          1,
+			Title:       "test",
+			URL:         "http://example.com",
+			Description: "for test",
+			Type:        "Japanese",
+			Lat:         1.1,
+			Lng:         -1.1,
+		})
+		expectedResponses = append(expectedResponses, domain.Article{
+			ID:          2,
+			Title:       "test",
+			URL:         "http://example.net",
+			Description: "for test",
+			Type:        "Chinese",
+			Lat:         1.1,
+			Lng:         -1.1,
+		})
+		req = httptest.NewRequest("GET", "/api/article", nil)
+		rec = httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+		json.NewDecoder(rec.Body).Decode(&actualResponses)
+		for idx, _ := range actualResponses {
+			squashTimeDataOfResponse(&expectedResponses[idx], &actualResponses[idx])
+		}
+		assert.Equal(t, expectedResponses, actualResponses)
+
 		// 4. ReadOne
+		expectedResponses = make([]domain.Article, 0)
+		expectedResponses = append(expectedResponses, domain.Article{
+			ID:          1,
+			Title:       "test",
+			URL:         "http://example.com",
+			Description: "for test",
+			Type:        "Japanese",
+			Lat:         1.1,
+			Lng:         -1.1,
+		})
+		b, err = json.Marshal(&request)
+		assert.Nil(t, err)
+		req = httptest.NewRequest("GET", "/api/article/1", nil)
+		rec = httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+		json.NewDecoder(rec.Body).Decode(&actualResponse)
+		squashTimeDataOfResponse(&expectedResponse, &actualResponse)
+		assert.Equal(t, expectedResponse, actualResponse)
+
 		// 5. Update
+		request = domain.Article{
+			ID:          1,
+			Title:       "update",
+			Description: "update",
+		}
+		/* TODO
+		expectedResponse = domain.Article{
+			ID:          1,
+			Title:       "update",
+			URL:         "http://example.com",
+			Description: "update",
+			Type:        "Japanese",
+			Lat:         1.1,
+			Lng:         -1.1,
+		}
+		*/
+		expectedResponse = domain.Article{
+			ID:          1,
+			Title:       "update",
+			Description: "update",
+		}
+		b, err = json.Marshal(&request)
+		assert.Nil(t, err)
+		req = httptest.NewRequest("PUT", "/api/article", bytes.NewReader(b))
+		req.Header.Set("Content-Type", "application/json")
+		rec = httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusAccepted, rec.Code)
+		json.NewDecoder(rec.Body).Decode(&actualResponse)
+		squashTimeDataOfResponse(&expectedResponse, &actualResponse)
+		assert.Equal(t, expectedResponse, actualResponse)
+
 		// 6. Delete
+		request = domain.Article{
+			ID: 2,
+		}
+		expectedResponse = domain.Article{
+			ID:          2,
+			Title:       "",
+			URL:         "",
+			Description: "",
+			Type:        "",
+			Lat:         0,
+			Lng:         0,
+		}
+		b, err = json.Marshal(&request)
+		assert.Nil(t, err)
+		req = httptest.NewRequest("DELETE", "/api/article", bytes.NewReader(b))
+		req.Header.Set("Content-Type", "application/json")
+		rec = httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusAccepted, rec.Code)
+		json.NewDecoder(rec.Body).Decode(&actualResponse)
+		squashTimeDataOfResponse(&expectedResponse, &actualResponse)
+		assert.Equal(t, expectedResponse, actualResponse)
+
 		// 7. ReadAll
+		expectedResponses = make([]domain.Article, 0)
+		expectedResponses = append(expectedResponses, domain.Article{
+			ID:          1,
+			Title:       "update",
+			URL:         "http://example.com",
+			Description: "update",
+			Type:        "Japanese",
+			Lat:         1.1,
+			Lng:         -1.1,
+		})
+		req = httptest.NewRequest("GET", "/api/article", nil)
+		rec = httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+		json.NewDecoder(rec.Body).Decode(&actualResponses)
+		for idx, _ := range actualResponses {
+			squashTimeDataOfResponse(&expectedResponses[idx], &actualResponses[idx])
+		}
+		assert.Equal(t, expectedResponses, actualResponses)
 	})
 }
 
@@ -111,7 +232,7 @@ func TestArticleController(t *testing.T) {
 % curl localhost:8080/api/article/
 */
 
-func Exists(filename string) bool {
-	_, err := os.Stat(filename)
-	return err == nil
+func squashTimeDataOfResponse(expected, actual *domain.Article) {
+	actual.CreatedAt = expected.CreatedAt
+	actual.UpdatedAt = expected.UpdatedAt
 }
