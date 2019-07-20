@@ -51,5 +51,5 @@ func GetEnv() string {
 	dbHost := utils.GetEnvOrDefault("DB_HOST", "localhost")
 	dbPort := utils.GetEnvOrDefault("DB_PORT", "3306")
 	dbName := utils.GetEnvOrDefault("DB_NAME", "tabemap")
-	return dbUser + ":" + dbPass + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
+	return dbUser + ":" + dbPass + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName + "?parseTime=true"
 }
