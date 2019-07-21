@@ -37,17 +37,9 @@ spec:
               value: info
             - name: GIN_MODE
               value: release
-        - name: mysql  # TODO
-          image: "mysql:5.7.26"
-          ports:
-            - name: mysql
-              protocol: TCP
-              containerPort: 3306
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              value: password
-            - name: MYSQL_DATABASE
-              value: tabemap
+          envFrom:
+          - secretRef:
+              name: mysql-common-env
 ---
 apiVersion: v1
 kind: Service
@@ -86,3 +78,16 @@ spec:
         backend:
           serviceName: tabemap-api
           servicePort: 8080
+---
+apiVersion: v1
+data:
+  DB_USER: root
+  DB_PASSWORD: password
+  DB_HOST: mysql.database.svc
+  DB_NAME: tabemap
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: tabemap-api
+  namespace: default
+

@@ -28,7 +28,8 @@ podTemplate(
 ) {
   node ('pipeline') {
     withCredentials([
-      usernamePassword(credentialsId: 'docker_id', usernameVariable: 'DOCKER_ID_USR', passwordVariable: 'DOCKER_ID_PSW')
+      usernamePassword(credentialsId: 'docker_id', usernameVariable: 'DOCKER_ID_USR', passwordVariable: 'DOCKER_ID_PSW'),
+      usernamePassword(credentialsId: 'mysql_id', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASSWORD')
     ]) {
       stage('Provisioning') {
         container('golang') {
@@ -55,6 +56,8 @@ podTemplate(
         container('skaffold') {
           sh """
             docker login --username=$DOCKER_ID_USR --password=$DOCKER_ID_PSW
+            perl -pi -e 's|^(  DB_USER: ).*$|$1'$DB_USER'|g' kubernetes/manifest/manifest.yaml
+            perl -pi -e 's|^(  DB_PASSWORD: ).*$|$1'$DB_PASSWORD'|g' kubernetes/manifest/manifest.yaml
             skaffold run
           """
         }

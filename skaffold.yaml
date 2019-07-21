@@ -2,7 +2,6 @@ apiVersion: skaffold/v1beta12
 kind: Config
 build:
   artifacts:
-  #- image: docker.io/kanatakita/tabemap-api
   - image: kanatakita/tabemap-api
     context: .
     docker:
