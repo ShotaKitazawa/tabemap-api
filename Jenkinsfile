@@ -11,8 +11,8 @@ podTemplate(
       image: 'mysql:5.7.26',
       ttyEnabled: true,
       envVars: [
-        envVar(key: "MYSQL_ROOT_PASSWORD", value: "password"),
-        envVar(key: "MYSQL_DATABASE", value: "tabemap")
+        envVar(key: "MYSQL_ROOT_PASSWORD_FOR_TEST", value: "password"),
+        envVar(key: "MYSQL_DATABASE_FOR_TEST", value: "tabemap")
         ]
       ),
     containerTemplate(
@@ -48,7 +48,7 @@ podTemplate(
       stage('Unit & Integration Test') {
         container('golang') {
           sh """
-            go test -tags "mysql integration" -v -cover ./...
+            DB_PASSWORD=$MYSQL_ROOT_PASSWORD_FOR_TEST DB_NAME=$MYSQL_DATABASE_FOR_TEST go test -tags "mysql integration" -v -cover ./...
           """
         }
       }
@@ -56,8 +56,8 @@ podTemplate(
         container('skaffold') {
           sh """
             docker login --username=$DOCKER_ID_USR --password=$DOCKER_ID_PSW
-            perl -pi -e 's|^(  DB_USER: ).*$|$1'$DB_USER'|g' kubernetes/manifest/manifest.yaml
-            perl -pi -e 's|^(  DB_PASSWORD: ).*$|$1'$DB_PASSWORD'|g' kubernetes/manifest/manifest.yaml
+            perl -pi -e 's|^(  DB_USER: ).*\$|\$1'$DB_USER'|g' kubernetes/manifest/manifest.yaml
+            perl -pi -e 's|^(  DB_PASSWORD: ).*\$|\$1'$DB_PASSWORD'|g' kubernetes/manifest/manifest.yaml
             skaffold run
           """
         }
