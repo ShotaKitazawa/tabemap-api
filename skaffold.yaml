@@ -13,6 +13,7 @@ build:
     #  template: latest
   local:
     push: true
+    useBuildkit: true
 deploy:
   kubectl:
     manifests:
