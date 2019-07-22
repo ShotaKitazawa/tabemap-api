@@ -38,6 +38,8 @@ spec:
             - name: GIN_MODE
               value: release
           envFrom:
+          - configMapRef:
+              name: mysql-common-env
           - secretRef:
               name: mysql-common-env
 ---
@@ -81,10 +83,18 @@ spec:
 ---
 apiVersion: v1
 data:
-  DB_USER: root
-  DB_PASSWORD: password
   DB_HOST: mysql.database.svc
   DB_NAME: tabemap
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: tabemap-api
+  namespace: default
+---
+apiVersion: v1
+data:
+  DB_USER: cm9vdA==
+  DB_PASSWORD: cGFzc3dvcmQ=
 kind: Secret
 metadata:
   creationTimestamp: null
