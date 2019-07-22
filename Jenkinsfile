@@ -11,8 +11,8 @@ podTemplate(
       image: 'mysql:5.7.26',
       ttyEnabled: true,
       envVars: [
-        envVar(key: "MYSQL_ROOT_PASSWORD_FOR_TEST", value: "password"),
-        envVar(key: "MYSQL_DATABASE_FOR_TEST", value: "tabemap")
+        envVar(key: "MYSQL_ROOT_PASSWORD", value: "password"),
+        envVar(key: "MYSQL_DATABASE", value: "tabemap")
         ]
       ),
     containerTemplate(
@@ -48,7 +48,7 @@ podTemplate(
       stage('Unit & Integration Test') {
         container('golang') {
           sh """
-            DB_PASSWORD=$MYSQL_ROOT_PASSWORD_FOR_TEST DB_NAME=$MYSQL_DATABASE_FOR_TEST go test -tags "mysql integration" -v -cover ./...
+            DB_PASSWORD=password DB_NAME=tabemap go test -tags "mysql integration" -v -cover ./...
           """
         }
       }
