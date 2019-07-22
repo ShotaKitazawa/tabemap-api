@@ -39,9 +39,9 @@ spec:
               value: release
           envFrom:
           - configMapRef:
-              name: mysql-common-env
+              name: tabemap-api
           - secretRef:
-              name: mysql-common-env
+              name: tabemap-api
 ---
 apiVersion: v1
 kind: Service
