@@ -1,5 +1,4 @@
 // +build !mysql
-// +build sqlite
 
 package external
 
