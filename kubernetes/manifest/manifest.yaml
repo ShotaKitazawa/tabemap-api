@@ -71,7 +71,7 @@ spec:
   tls:
   - hosts:
     - tabemap.kanatakita.com
-    secretName: application
+    secretName: application-tls
   rules:
   - host: tabemap.kanatakita.com
     http:
