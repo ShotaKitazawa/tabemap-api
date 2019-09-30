@@ -1,5 +1,7 @@
 podTemplate(
   label: 'pipeline',
+  namespace: 'integration',
+  serviceAccount: 'jnlp',
   containers: [
     containerTemplate(
       name: 'golang',
