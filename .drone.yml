@@ -1,0 +1,62 @@
+---
+kind: secret
+name: docker_username
+
+get:
+  path: drone-credential
+  name: docker-username
+
+---
+kind: secret
+name: docker_password
+
+get:
+  path: drone-credential
+  name: docker-password
+
+---
+kind: secret
+name: db_username
+
+get:
+  path: drone-credential
+  name: tabemap-api-db-username
+
+---
+kind: secret
+name: db_password
+
+get:
+  path: drone-credential
+  name: tabemap-api-db-password
+
+---
+kind: pipeline
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: test
+  image: golang:1.12.7
+  commands:
+  - go test -tags "sqlite integration" -v -cover ./...
+
+- name: build
+  image: golang:1.12.7
+  commands:
+  - CGO_ENABLED=0 GOOS=linux go build -tags "mysql" -a -installsuffix cgo -o tabemap-api .
+
+- name: docker
+  image: plugins/docker
+  settings:
+    password:
+      from_secret: docker_password
+    repo: docker.io/kanatakita/tabemap-api
+    tags: latest
+    username:
+      from_secret: docker_username
+
+

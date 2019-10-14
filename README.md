@@ -1,12 +1,1 @@
-
-
-# DB
-
-* 備考
-    * lat,lngからaddressを引くのは初回のみ、redis等にキャッシュ
-        * {pos_id: address}
-
-```
-shop{id, name, url, description, type, lat, lng}
-```
-
+[![Build Status](https://drone.kanatakita.com/api/badges/ShotaKitazawa/tabemap-api/status.svg)](https://drone.kanatakita.com/ShotaKitazawa/tabemap-api)
