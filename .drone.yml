@@ -31,7 +31,3 @@ steps:
   depends_on:
   - test
   - build
-
-trigger:
-  branch:
-  - master
