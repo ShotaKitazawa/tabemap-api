@@ -21,47 +21,17 @@ steps:
 - name: docker
   image: plugins/docker
   settings:
-    password:
-      from_secret: docker_password
     repo: docker.io/kanatakita/tabemap-api
     tags: latest
+    dockerfile: ./kubernetes/container/Dockerfile
     username:
-      from_secret: docker_username
+      from_secret: docker-username
+    password:
+      from_secret: docker-password
+  depends_on:
+  - test
+  - build
 
 trigger:
   branch:
   - master
-
----
-kind: secret
-name: docker_username
-
-get:
-  path: drone-credential
-  name: docker-username
-
----
-kind: secret
-name: docker_password
-
-get:
-  path: drone-credential
-  name: docker-password
-
----
-kind: secret
-name: db_username
-
-get:
-  path: drone-credential
-  name: tabemap-api-db-username
-
----
-kind: secret
-name: db_password
-
-get:
-  path: drone-credential
-  name: tabemap-api-db-password
-
-
