@@ -18,6 +18,14 @@ steps:
   commands:
   - CGO_ENABLED=0 GOOS=linux go build -tags "mysql" -a -installsuffix cgo -o tabemap-api .
 
+- name: git-commit-hash
+  image: alpine/git:1.0.7
+  commands:
+  - echo -n "$(git tag -l --points-at HEAD)" >> .tags
+  - echo -n "$(git rev-parse --short HEAD)" >> .tags
+  - echo -n "," >> .tags
+  - echo -n "latest" >> .tags
+
 - name: docker
   image: plugins/docker
   settings:
