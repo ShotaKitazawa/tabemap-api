@@ -31,7 +31,7 @@ steps:
   settings:
     repo: docker.io/kanatakita/tabemap-api
     tags: latest
-    dockerfile: ./kubernetes/container/Dockerfile
+    dockerfile: ./Dockerfile
     username:
       from_secret: docker-username
     password:
@@ -48,13 +48,14 @@ steps:
       from_secret: deploy_key
   commands:
   - export REMOTE_URL="$(git config remote.origin.url | sed -e 's|.git$||g')"
+  - export REPOSITORY="$(echo $REMOTE_URL | awk -F'/' '{print $NF}')"
   - export COMMIT_HASH="$(git rev-parse --short HEAD)"
   - mkdir /root/.ssh && echo "$SSH_KEY" > /root/.ssh/id_rsa && chmod 0600 /root/.ssh/id_rsa
   - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > /root/.ssh/config
   - git clone git@github.com:ShotaKitazawa/manifests-gitops.git /root/manifests
   - cd /root/manifests
-  - sed -i -e 's|\(deployDate:\).*$|\1 '$(date +%Y-%m-%d)'|g' /root/manifests/myapp/portal/manifest.yaml
-  - sed -i -e 's|\(commitHash:\).*$|\1 '$COMMIT_HASH'|g' /root/manifests/myapp/portal/manifest.yaml
+  - sed -i -e 's|\(deployDate:\).*$|\1 '$(date +%Y-%m-%d)'|g' /root/manifests/myapp/$REPOSITORY/manifest.yaml
+  - sed -i -e 's|\(commitHash:\).*$|\1 '$COMMIT_HASH'|g' /root/manifests/myapp/$REPOSITORY/manifest.yaml
   - git add .
   - git config user.name DroneCI
   - git config user.email dummy@example.com
