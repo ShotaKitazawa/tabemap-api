@@ -7,6 +7,10 @@ platform:
   os: linux
   arch: amd64
 
+trigger:
+  branch:
+  - master
+
 steps:
 - name: test
   image: golang:1.12.7
