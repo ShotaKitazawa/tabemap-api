@@ -5,11 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 
-	"github.com/ShotaKitazawa/tabemap-api/adapter/gateway"
-	"github.com/ShotaKitazawa/tabemap-api/adapter/interfaces"
+	"github.com/ShotaKitazawa/tabemap-api/controllers/interfaces"
 	"github.com/ShotaKitazawa/tabemap-api/domain"
 	"github.com/ShotaKitazawa/tabemap-api/usecase"
 )
@@ -18,39 +16,13 @@ type ArticleController struct {
 	Interactor usecase.ArticleInteractor
 }
 
-func NewArticleController(dbConn *gorm.DB, logger interfaces.Logger) *ArticleController {
-	return &ArticleController{
-		Interactor: usecase.ArticleInteractor{
-			ArticleRepository: &gateway.ArticleRepository{
-				DBConn: dbConn,
-			},
-			Logger: logger,
-		},
-	}
-}
+// TODO 用途のぶんだけハンドラを用意する
+// c.f.
+//  現在: 検索 -> Read()
+//  TODO: 検索(名前) -> SearchName(), 検索(ID) -> SearchID()
 
-func (controller *ArticleController) Create(c interfaces.Context) {
-	type (
-		Request struct {
-			Title       string  `json:"title"`
-			URL         string  `json:"url"`
-			Description string  `json:"description"`
-			Type        string  `json:"type"`
-			Lat         float64 `json:"latitude"`
-			Lng         float64 `json:"longitude"`
-		}
-		Response struct {
-			ID          int64     `json:"id"`
-			Title       string    `json:"title"`
-			URL         string    `json:"url"`
-			Description string    `json:"description"`
-			Type        string    `json:"type"`
-			Lat         float64   `json:"latitude"`
-			Lng         float64   `json:"longitude"`
-			CreatedAt   time.Time `json:"created_at"`
-		}
-	)
-	req := Request{}
+func (controller *ArticleController) CreateArticle(c interfaces.Context) {
+	req := RequestCreate{}
 	c.Bind(&req)
 
 	article := &domain.Article{
@@ -71,7 +43,7 @@ func (controller *ArticleController) Create(c interfaces.Context) {
 		return
 	}
 
-	res := Response{
+	res := ResponseCreate{
 		ID:          result.ID,
 		Title:       result.Title,
 		URL:         result.URL,
@@ -91,27 +63,8 @@ func (controller *ArticleController) Create(c interfaces.Context) {
 
 func (controller *ArticleController) Read(c interfaces.Context) {
 	type (
-		Request struct {
-			ID     int64   `json:"id"`
-			Title  string  `json:"title"`
-			Type   string  `json:"type"`
-			Lat    float64 `json:"latitude"`
-			Lng    float64 `json:"longitude"`
-			Limit  int     `json:"limit"`
-			Offset int     `json:"offset"`
-		}
-		Response struct {
-			ID          int64     `json:"id"`
-			Title       string    `json:"title"`
-			URL         string    `json:"url"`
-			Description string    `json:"description"`
-			Lat         float64   `json:"latitude"`
-			Lng         float64   `json:"longitude"`
-			Type        string    `json:"type"`
-			CreatedAt   time.Time `json:"created_at"`
-		}
 	)
-	req := Request{}
+	req := RequestRead{}
 	c.Bind(&req)
 
 	article := &domain.Article{

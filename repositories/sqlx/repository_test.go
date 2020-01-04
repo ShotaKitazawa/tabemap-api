@@ -1,4 +1,4 @@
-package gateway
+package dbrepo
 
 import (
 	"database/sql/driver"
@@ -28,7 +28,7 @@ func TestMain(m *testing.M) {
 func TestArticleController(t *testing.T) {
 	t.Run("Store()", func(t *testing.T) {
 		t.Run("保存する(正常系)", func(t *testing.T) {
-			var r ArticleRepository
+			var r Repository
 			var d *domain.Article
 			db, mock, err := getDBMock()
 			if err != nil {
@@ -37,7 +37,7 @@ func TestArticleController(t *testing.T) {
 			defer db.Close()
 			db.LogMode(true)
 
-			r = ArticleRepository{DBConn: db}
+			r = Repository{DBConn: db}
 			d = &domain.Article{
 				ID:          1,
 				Title:       "hoge",
@@ -64,7 +64,7 @@ func TestArticleController(t *testing.T) {
 			//assert.Nil(t, mock.ExpectationsWereMet())
 		})
 		t.Run("保存する(異常系)", func(t *testing.T) {
-			var r ArticleRepository
+			var r Repository
 			var d *domain.Article
 			db, _, err := getDBMock()
 			if err != nil {
@@ -73,7 +73,7 @@ func TestArticleController(t *testing.T) {
 			defer db.Close()
 			db.LogMode(true)
 
-			r = ArticleRepository{DBConn: db}
+			r = Repository{DBConn: db}
 			d = &domain.Article{
 				ID:          1,
 				Title:       "",
@@ -92,7 +92,7 @@ func TestArticleController(t *testing.T) {
 	})
 	t.Run("Find()", func(t *testing.T) {
 		t.Run("すべて取得する", func(t *testing.T) {
-			var r ArticleRepository
+			var r Repository
 			var d *domain.Article
 			db, mock, err := getDBMock()
 			if err != nil {
@@ -101,7 +101,7 @@ func TestArticleController(t *testing.T) {
 			defer db.Close()
 			db.LogMode(true)
 
-			r = ArticleRepository{DBConn: db}
+			r = Repository{DBConn: db}
 			d = &domain.Article{
 				ID:    0,
 				Title: "hoge",
@@ -118,7 +118,7 @@ func TestArticleController(t *testing.T) {
 			assert.Nil(t, mock.ExpectationsWereMet())
 		})
 		t.Run("name=`ほげ`を取得する", func(t *testing.T) {
-			var r ArticleRepository
+			var r Repository
 			var d *domain.Article
 			db, mock, err := getDBMock()
 			if err != nil {
@@ -127,7 +127,7 @@ func TestArticleController(t *testing.T) {
 			defer db.Close()
 			db.LogMode(true)
 
-			r = ArticleRepository{DBConn: db}
+			r = Repository{DBConn: db}
 			d = &domain.Article{
 				ID:    0,
 				Title: "ほげ",
@@ -146,7 +146,7 @@ func TestArticleController(t *testing.T) {
 	})
 	t.Run("Update()", func(t *testing.T) {
 		t.Run("ID=1のnameを更新する", func(t *testing.T) {
-			var r ArticleRepository
+			var r Repository
 			var d *domain.Article
 			db, mock, err := getDBMock()
 			if err != nil {
@@ -155,7 +155,7 @@ func TestArticleController(t *testing.T) {
 			defer db.Close()
 			db.LogMode(true)
 
-			r = ArticleRepository{DBConn: db}
+			r = Repository{DBConn: db}
 			d = &domain.Article{
 				ID:    1,
 				Title: "ほげ",
@@ -181,7 +181,7 @@ func TestArticleController(t *testing.T) {
 	})
 	t.Run("Delete()", func(t *testing.T) {
 		t.Run("ID=1を削除する", func(t *testing.T) {
-			var r ArticleRepository
+			var r Repository
 			var d *domain.Article
 			db, mock, err := getDBMock()
 			if err != nil {
@@ -190,7 +190,7 @@ func TestArticleController(t *testing.T) {
 			defer db.Close()
 			db.LogMode(true)
 
-			r = ArticleRepository{DBConn: db}
+			r = Repository{DBConn: db}
 			d = &domain.Article{
 				ID: 1,
 			}

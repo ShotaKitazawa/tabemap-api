@@ -6,26 +6,26 @@ import (
 )
 
 type ArticleInteractor struct {
-	ArticleRepository interfaces.ArticleRepository
-	Logger            interfaces.Logger
+	DBRepository interfaces.DBRepository
+	Logger       interfaces.Logger
 }
 
 func (i *ArticleInteractor) Add(d *domain.Article) (*domain.Article, error) {
 	i.Logger.Info("add data")
-	return i.ArticleRepository.Store(d)
+	return i.DBRepository.Store(d)
 }
 
 func (i *ArticleInteractor) Find(article *domain.Article, limit, offset int) ([]*domain.Article, error) {
 	i.Logger.Info("get data")
-	return i.ArticleRepository.Search(article, limit, offset)
+	return i.DBRepository.Search(article, limit, offset)
 }
 
 func (i *ArticleInteractor) Update(article *domain.Article) (*domain.Article, error) {
 	i.Logger.Info("update data")
-	return i.ArticleRepository.Update(article)
+	return i.DBRepository.Update(article)
 }
 
 func (i *ArticleInteractor) Delete(article *domain.Article) (*domain.Article, error) {
 	i.Logger.Info("delete data")
-	return i.ArticleRepository.Delete(article)
+	return i.DBRepository.Delete(article)
 }
