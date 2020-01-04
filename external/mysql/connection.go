@@ -4,22 +4,21 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
-	"github.com/ShotaKitazawa/tabemap-api/adapter/gateway"
-	"github.com/ShotaKitazawa/tabemap-api/utils"
+	dbrepo "github.com/ShotaKitazawa/tabemap-api/repositories/gorm"
 )
 
 var db *gorm.DB
 
-func Connect(target string) *gorm.DB {
+func Connect(target string) (*gorm.DB, error) {
 	var err error
 
 	db, err = gorm.Open("mysql", target)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	db.AutoMigrate(&gateway.Shop{})
+	db.AutoMigrate(&dbrepo.Shop{})
 	/*
 		if !db.HasTable(&gateway.Map{}) {
 			if err := db.Table("map").CreateTable(&gateway.Map{}).Error; err != nil {
@@ -38,18 +37,9 @@ func Connect(target string) *gorm.DB {
 		}
 	*/
 
-	return db
+	return db, nil
 }
 
 func CloseConn() {
 	db.Close()
-}
-
-func GetEnv() string {
-	dbUser := utils.GetEnvOrDefault("DB_USER", "root")
-	dbPass := utils.GetEnvOrDefault("DB_PASSWORD", "password")
-	dbHost := utils.GetEnvOrDefault("DB_HOST", "localhost")
-	dbPort := utils.GetEnvOrDefault("DB_PORT", "3306")
-	dbName := utils.GetEnvOrDefault("DB_NAME", "tabemap")
-	return dbUser + ":" + dbPass + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName + "?parseTime=true"
 }

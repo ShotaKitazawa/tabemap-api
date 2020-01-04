@@ -4,22 +4,21 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/ShotaKitazawa/tabemap-api/adapter/gateway"
-	"github.com/ShotaKitazawa/tabemap-api/utils"
+	dbrepo "github.com/ShotaKitazawa/tabemap-api/repositories/gorm"
 )
 
 var db *gorm.DB
 
-func Connect(target string) *gorm.DB {
+func Connect(target string) (*gorm.DB, error) {
 	var err error
 
 	db, err = gorm.Open("sqlite3", target)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	db.AutoMigrate(&gateway.Shop{})
+	db.AutoMigrate(&dbrepo.Shop{})
 	/*
 		if !db.HasTable(&gateway.Map{}) {
 			if err := db.Table("map").CreateTable(&gateway.Map{}).Error; err != nil {
@@ -38,13 +37,9 @@ func Connect(target string) *gorm.DB {
 		}
 	*/
 
-	return db
+	return db, nil
 }
 
 func CloseConn() {
 	db.Close()
-}
-
-func GetEnv() string {
-	return utils.GetEnvOrDefault("SQLITE_FILENAME", "tabemap.sqlite3")
 }
