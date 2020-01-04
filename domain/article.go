@@ -4,13 +4,13 @@ import "time"
 
 // Article is Shop data
 type Article struct {
-	ID          int64     `json:"id"`
-	Title       string    `json:"title"`
-	URL         string    `json:"url"`
-	Description string    `json:"description"`
-	Type        string    `json:"type"`
-	Lat         float64   `json:"latitude"`
-	Lng         float64   `json:"longitude"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int64
+	Title       string
+	URL         string
+	Description string
+	Type        string
+	Lat         float64
+	Lng         float64
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }

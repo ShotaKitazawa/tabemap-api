@@ -14,10 +14,17 @@ trigger:
   - push
 
 steps:
-- name: test
+- name: unit-test
   image: golang:1.12.7
   commands:
-  - go test -tags "sqlite integration" -v -cover ./...
+  - go test -tags "unit" -v -cover ./...
+
+- name: integration-test
+  image: golang:1.12.7
+  commands:
+  # TODO
+  #- go test -tags "integration" -v -cover ./...
+  - :
 
 - name: build
   image: golang:1.12.7
@@ -43,7 +50,8 @@ steps:
     password:
       from_secret: docker-password
   depends_on:
-  - test
+  - unit-test
+  - integration-test
   - build
 
 - name: update-manifest

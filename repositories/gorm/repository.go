@@ -1,4 +1,4 @@
-package gateway
+package dbrepo
 
 import (
 	"errors"
@@ -11,34 +11,11 @@ import (
 )
 
 var (
-	ErrNameIsEmpty error
-	ErrIDIsEmpty   error
-)
-
-func init() {
 	ErrNameIsEmpty = errors.New("Name is empty")
-	ErrIDIsEmpty = errors.New("ID is empty")
-}
-
-type (
-	// ArticleRepository is repository
-	ArticleRepository struct {
-		DBConn *gorm.DB
-	}
-
-	// Shop struct is DB shop table
-	Shop struct {
-		gorm.Model
-		Name        string
-		URL         string
-		Description string
-		Type        string
-		Lat         float64
-		Lng         float64
-	}
+	ErrIDIsEmpty   = errors.New("ID is empty")
 )
 
-func (r *ArticleRepository) Store(article *domain.Article) (result *domain.Article, err error) {
+func (r *Repository) Store(article *domain.Article) (result *domain.Article, err error) {
 	shop := &Shop{
 		Name:        article.Title,
 		URL:         article.URL,
@@ -65,7 +42,7 @@ func (r *ArticleRepository) Store(article *domain.Article) (result *domain.Artic
 	}, nil
 }
 
-func (r *ArticleRepository) Search(article *domain.Article, limit, offset int) (results []*domain.Article, err error) {
+func (r *Repository) Search(article *domain.Article, limit, offset int) (results []*domain.Article, err error) {
 	var queryArray []string
 	if article.ID != 0 {
 		queryArray = append(queryArray, fmt.Sprintf("id=\"%d\"", article.ID))
@@ -109,7 +86,7 @@ func (r *ArticleRepository) Search(article *domain.Article, limit, offset int) (
 	return d, nil
 }
 
-func (r *ArticleRepository) Update(article *domain.Article) (result *domain.Article, err error) {
+func (r *Repository) Update(article *domain.Article) (result *domain.Article, err error) {
 	shop := &Shop{
 		Model: gorm.Model{
 			ID: uint(article.ID),
@@ -161,7 +138,7 @@ func (r *ArticleRepository) Update(article *domain.Article) (result *domain.Arti
 	}, nil
 }
 
-func (r *ArticleRepository) Delete(article *domain.Article) (result *domain.Article, err error) {
+func (r *Repository) Delete(article *domain.Article) (result *domain.Article, err error) {
 	shop := &Shop{
 		Model: gorm.Model{
 			ID: uint(article.ID),
