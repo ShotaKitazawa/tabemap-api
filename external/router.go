@@ -63,10 +63,10 @@ func Run(ctx context.Context) {
 
 	// define handlers
 	v.POST("/article", func(c *gin.Context) { ArticleController.Create(c) })
-	v.GET("/article", func(c *gin.Context) { ArticleController.Search(c) })
-	v.GET("/article/:id", func(c *gin.Context) { ArticleController.Search(c) })
-	v.PUT("/article", func(c *gin.Context) { ArticleController.Update(c) })
-	v.DELETE("/article", func(c *gin.Context) { ArticleController.Delete(c) })
+	v.GET("/article/:id", func(c *gin.Context) { ArticleController.Detail(c) })
+	v.POST("/article/search", func(c *gin.Context) { ArticleController.Search(c) })
+	v.PUT("/article/:id", func(c *gin.Context) { ArticleController.Update(c) })
+	v.DELETE("/article/:id", func(c *gin.Context) { ArticleController.Delete(c) })
 
 	// bind
 	r.Run(bindHost)

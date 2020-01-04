@@ -54,7 +54,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringP("bind-address", "", "0.0.0.0", "Bind address")
 	rootCmd.PersistentFlags().UintP("bind-port", "", 8080, "Bind port")
-	rootCmd.PersistentFlags().StringP("db-type", "", "mysql", "kind of DB (c.f. mysql, sqlite3)")
+	rootCmd.PersistentFlags().StringP("db-type", "", "sqlite3", "kind of DB (c.f. mysql, sqlite3)")
 	rootCmd.PersistentFlags().StringP("db-user", "", "root", "User to connect DB")
 	rootCmd.PersistentFlags().StringP("db-password", "", "password", "Password to connect DB")
 	rootCmd.PersistentFlags().StringP("db-host", "", "127.0.0.1", "Host to connect DB")

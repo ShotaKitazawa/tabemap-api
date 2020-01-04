@@ -3,7 +3,7 @@ package controllers
 import "time"
 
 type (
-	// RequestCreate is request of /article/:title (POST)
+	// RequestCreate is request of /article (POST)
 	RequestCreate struct {
 		Title       string  `json:"title"`
 		URL         string  `json:"url"`
@@ -12,7 +12,7 @@ type (
 		Lat         float64 `json:"latitude"`
 		Lng         float64 `json:"longitude"`
 	}
-	// ResponseCreate is response of /article/:title (POST)
+	// ResponseCreate is response of /article (POST)
 	ResponseCreate struct {
 		ID          int64     `json:"id"`
 		Title       string    `json:"title"`
@@ -51,7 +51,7 @@ type (
 		Limit  int     `json:"limit"`
 		Offset int     `json:"offset"`
 	}
-	// ResponseSearch is response of /article/ (GET)
+	// ResponseSearch is response of /article/ (POST)
 	ResponseSearchOne struct {
 		ID        int64     `json:"id"`
 		Title     string    `json:"title"`
